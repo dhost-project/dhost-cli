@@ -1,13 +1,15 @@
 #!/usr/bin/python3
 
 import argparse
-import requests
+import sys
 from getpass import getpass
 
-OAUTH_SERVER_URL = 'http://127.0.0.1:8000/'
+import requests
+
+OAUTH_SERVER_URL = 'http://localhost:8000/'
 OAUTH_TOKEN_URL = 'oauth2/token/'
 OAUTH_CLIENT_ID = 'test'
-DEFAULT_API_URL = 'http://127.0.0.1:8000/'
+DEFAULT_API_URL = 'http://localhost:8000/'
 TOKEN_PREFIX = 'Token'
 
 
@@ -59,7 +61,6 @@ class DhostAPI:
         }
         r = requests.post(url, data=cred)
         if r.status_code == 200:
-            print(r.json())
             self.token = r.json()['access_token']
             return self.token
         else:
@@ -189,12 +190,6 @@ if __name__ == '__main__':
         help="Get your API token from username and password."
     )
     parser.add_argument('-a', '--api_url', default=DEFAULT_API_URL)
-    parser.add_argument(
-        'INPUT_FILE',
-        help='file to upload',
-        type=argparse.FileType('r'),
-        default=sys.stdin
-    )
 
     subparser = parser.add_subparsers(dest='cmd')
 
