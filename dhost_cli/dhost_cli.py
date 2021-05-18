@@ -1,7 +1,8 @@
 """Main module."""
 
-import requests
 from getpass import getpass
+
+import requests
 
 from dhost_cli import settings
 
@@ -11,7 +12,6 @@ class DhostAPI:
     A common class to call the Dhost API,
     You should subclass this to implement call to the API.
     """
-
     def __init__(
         self,
         token=None,
@@ -67,14 +67,17 @@ class DhostAPI:
         token = self.token if token is None else token
         return {'Authorization': self.TOKEN_PREFIX + ' ' + token}
 
-    def _prepare_api_request(self, uri=None, url=None, headers=None, token=None):
+    def _prepare_api_request(self,
+                             uri=None,
+                             url=None,
+                             headers=None,
+                             token=None):
         """Prepare and API request with authorization header and build URL"""
         if url is None:
             if uri is None:
                 raise Exception(
                     'You must provide either an URL or an URI to make an API '
-                    'request.'
-                )
+                    'request.')
             else:
                 url = self.API_URL + uri
         # TODO add passed headers params
@@ -83,16 +86,16 @@ class DhostAPI:
 
     def post(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a POST request to the API"""
-        url, headers = self._prepare_api_request(
-            url=url, uri=uri, headers=headers
-        )
+        url, headers = self._prepare_api_request(url=url,
+                                                 uri=uri,
+                                                 headers=headers)
         return requests.post(url, headers=headers, *args, **kwargs)
 
     def get(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a GET request to the API"""
-        url, headers = self._prepare_api_request(
-            url=url, uri=uri, headers=headers
-        )
+        url, headers = self._prepare_api_request(url=url,
+                                                 uri=uri,
+                                                 headers=headers)
         response = requests.get(url, headers=headers, *args, **kwargs)
         if response.status_code == 200:
             return response
@@ -101,38 +104,38 @@ class DhostAPI:
 
     def put(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a PUT request to the API"""
-        url, headers = self._prepare_api_request(
-            url=url, uri=uri, headers=headers
-        )
+        url, headers = self._prepare_api_request(url=url,
+                                                 uri=uri,
+                                                 headers=headers)
         response = requests.put(url, headers=headers, *args, **kwargs)
         return response
 
     def patch(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a PUT request to the API"""
-        url, headers = self._prepare_api_request(
-            url=url, uri=uri, headers=headers
-        )
+        url, headers = self._prepare_api_request(url=url,
+                                                 uri=uri,
+                                                 headers=headers)
         response = requests.patch(url, headers=headers, *args, **kwargs)
         return response
 
     def delete(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a DELETE request to the API"""
-        url, headers = self._prepare_api_request(
-            url=url, uri=uri, headers=headers
-        )
+        url, headers = self._prepare_api_request(url=url,
+                                                 uri=uri,
+                                                 headers=headers)
         response = requests.delete(url, headers=headers, *args, **kwargs)
         return response
 
     def head(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a HEAD request to the API"""
-        url, headers = self._prepare_api_request(
-            url=url, uri=uri, headers=headers
-        )
+        url, headers = self._prepare_api_request(url=url,
+                                                 uri=uri,
+                                                 headers=headers)
         response = requests.head(url, *args, **kwargs)
         return response
 
     def post_file(self, file_paht, *args, **kwargs):
         # TODO get file here
         file = ''
-        reponse = self.post(file=file, *args, **kwargs)
+        response = self.post(file=file, *args, **kwargs)
         return response

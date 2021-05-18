@@ -3,7 +3,6 @@ from .utils import get_user_str_input
 
 
 class IPFSDappManagement(DhostAPI):
-
     def list(self):
         print('Listing your IPFS dapps')
         uri = 'ipfs/'

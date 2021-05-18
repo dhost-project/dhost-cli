@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """Tests for `dhost_cli` package."""
 
 import pytest
