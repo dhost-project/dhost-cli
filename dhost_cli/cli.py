@@ -67,13 +67,12 @@ def main():
 
     args = parser.parse_args()
 
-    instance = DhostAPI(
-        token=args.token,
-        username=args.username,
-        API_URL=args.api_url,
-    )
-
     if args.get_token:
+        instance = DhostAPI(
+            token=args.token,
+            username=args.username,
+            API_URL=args.api_url,
+        )
         print('Token: ' + instance.get_token())
 
     if args.cmd == 'ipfs':

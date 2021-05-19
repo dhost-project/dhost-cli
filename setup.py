@@ -38,15 +38,15 @@ setup(
     description="CLI to access the DHost services.",
     entry_points={
         'console_scripts': [
-            'dhost_cli=dhost_cli.cli:main',
+            'dhost-cli=dhost_cli.cli:main',
         ],
     },
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='dhost_cli',
-    name='dhost_cli',
+    keywords='dhost-cli',
+    name='dhost-cli',
     packages=find_packages(include=['dhost_cli', 'dhost_cli.*']),
     setup_requires=setup_requirements,
     test_suite='tests',
@@ -55,6 +55,6 @@ setup(
     project_urls={
         "Bug Tracker": "https://github.com/dhost-project/dhost-cli/issues",
     },
-    version='0.1.0',
+    version='0.1.1',
     zip_safe=False,
 )

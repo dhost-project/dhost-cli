@@ -25,5 +25,5 @@ deploy:
     secure: PLEASE_REPLACE_ME
   on:
     tags: true
-    repo: 2O4/dhost_cli
+    repo: 2O4/dhost-cli
     python: 3.8
