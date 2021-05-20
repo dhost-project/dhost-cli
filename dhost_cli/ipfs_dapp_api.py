@@ -7,21 +7,21 @@ class IPFSDappManagement(DhostAPI):
         print('Listing your IPFS dapps')
         uri = 'ipfs/'
         response = self.get(uri=uri)
-        print(response.content)
+        self._print_many_dapp(response.json())
 
     def read(self, dapp_id):
         """Get details about an IPFs dapp."""
-        print('Details for IPFS dapp: ' + dapp_id)
+        print('Details for IPFS dapp: {}'.format(dapp_id))
         uri = 'ipfs/' + dapp_id
-        r = self.get(uri=uri)
-        print(r.content)
+        response = self.get(uri=uri)
+        self._print_single_dapp(response.json())
 
     def update(self, dapp_id, *args, **kwargs):
         """Update an IPFS dapp"""
-        print('Updating IPFS dapp: ' + dapp_id)
+        print('Updating IPFS dapp: {}'.format(dapp_id))
         uri = 'ipfs/' + dapp_id
-        r = self.put(uri=uri, data=kwargs)
-        print(r.content)
+        response = self.put(uri=uri, data=kwargs)
+        self._print_single_dapp(response.json())
 
     def create(self, name=None, command=None, docker=None, slug=None):
         """Create an IPFS dapp"""
@@ -41,11 +41,55 @@ class IPFSDappManagement(DhostAPI):
 
         print('Creating IPFS dapp: `{}`'.format(name))
         response = self.post(uri=uri, data=data)
-        print(response.content)
+        self._print_single_dapp(response.json())
 
     def delete(self, dapp_id):
         """Delete an IPFS dapp"""
-        print('Deleting IPFS dapp: ' + dapp_id)
+        print('Deleting IPFS dapp: {}'.format(dapp_id))
         uri = 'ipfs/' + dapp_id
         r = self.delete(uri=uri)
         print(r.content)
+
+    def build(self, dapp_id):
+        """Build an IPFS dapp"""
+        print('Building IPFS dapp: {}'.format(dapp_id))
+
+    def deploy(self, dapp_id):
+        """Deploy and IPFS dapp"""
+        print('Deploying IPFS dapp: {}'.format(dapp_id))
+
+    @classmethod
+    def _print_response(cls, response):
+        print(response)
+
+    @classmethod
+    def _print_single_dapp(cls, dapp, index=None):
+        if index is None:
+            index = dapp['id']
+        print('____ Dapp [{}] '.format(index) + '_' * 15)
+        print('{} [{}]'.format(dapp['name'], dapp['id']))
+        print('Status: {}'.format(dapp['status']))
+
+        if dapp['url']:
+            print('URL: {}'.format(dapp['url']))
+
+        print('Build command: {}'.format(dapp['command']))
+        print('Docker: {}'.format(dapp['docker']))
+
+        builds_number = len(dapp['builds'])
+        if builds_number:
+            print('Number of builds: {}'.format(builds_number))
+
+        bundles_number = len(dapp['bundles'])
+        if bundles_number:
+            print('Number of bundles: {}'.format(bundles_number))
+
+        deployments_number = len(dapp['deployments'])
+        if deployments_number:
+            print('Number of deployments: {}'.format(deployments_number))
+
+    @classmethod
+    def _print_many_dapp(cls, dapp_list):
+        for index, dapp in enumerate(dapp_list, start=1):
+            print()
+            cls._print_single_dapp(dapp, index)
