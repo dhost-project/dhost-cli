@@ -100,7 +100,8 @@ class DhostAPI:
         if response.status_code == 200:
             return response
         else:
-            raise Exception('Error {}'.format(response.status))
+            print('Message:\n{}'.format(response.content))
+            raise Exception('Error {}'.format(response.status_code))
 
     def put(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a PUT request to the API"""
