@@ -5,27 +5,27 @@ from .utils import get_user_str_input
 class IPFSDappManagement(DhostAPI):
     def list(self):
         print('Listing your IPFS dapps')
-        uri = 'ipfs/'
+        uri = 'v1/ipfs/'
         response = self.get(uri=uri)
         self._print_many_dapp(response.json())
 
     def read(self, dapp_id):
         """Get details about an IPFs dapp."""
         print('Details for IPFS dapp: {}'.format(dapp_id))
-        uri = 'ipfs/' + dapp_id
+        uri = 'v1/ipfs/' + dapp_id
         response = self.get(uri=uri)
         self._print_single_dapp(response.json())
 
     def update(self, dapp_id, *args, **kwargs):
         """Update an IPFS dapp"""
         print('Updating IPFS dapp: {}'.format(dapp_id))
-        uri = 'ipfs/' + dapp_id
+        uri = 'v1/ipfs/' + dapp_id
         response = self.put(uri=uri, data=kwargs)
         self._print_single_dapp(response.json())
 
     def create(self, name=None, command=None, docker=None, slug=None):
         """Create an IPFS dapp"""
-        uri = 'ipfs/'
+        uri = 'v1/ipfs/'
 
         name = get_user_str_input(name, 'IPFS dapp name')
         command = get_user_str_input(command, 'Build command')
@@ -51,7 +51,7 @@ class IPFSDappManagement(DhostAPI):
     def delete(self, dapp_id):
         """Delete an IPFS dapp"""
         print('Deleting IPFS dapp: {}'.format(dapp_id))
-        uri = 'ipfs/' + dapp_id
+        uri = 'v1/ipfs/' + dapp_id
         r = self.delete(uri=uri)
         print(r.content)
 
