@@ -39,9 +39,14 @@ class IPFSDappManagement(DhostAPI):
             'slug': slug,
         }
 
-        print('Creating IPFS dapp: `{}`'.format(name))
         response = self.post(uri=uri, data=data)
-        self._print_single_dapp(response.json())
+
+        if response.status_code == 201:
+            print("Successfuly created IPFS dapp: '{}'.".format(name))
+            self._print_single_dapp(response.json())
+        else:
+            print('Error while creating dapp {}.'.format(response.status_code))
+            print(response.json())
 
     def delete(self, dapp_id):
         """Delete an IPFS dapp"""
@@ -65,7 +70,10 @@ class IPFSDappManagement(DhostAPI):
     @classmethod
     def _print_single_dapp(cls, dapp, index=None):
         if index is None:
-            index = dapp['id']
+            if 'id' in dapp:
+                index = dapp['id']
+            else:
+                index = dapp['name']
         print('____ Dapp [{}] '.format(index) + '_' * 15)
         print('{} [{}]'.format(dapp['name'], dapp['id']))
         print('Status: {}'.format(dapp['status']))
