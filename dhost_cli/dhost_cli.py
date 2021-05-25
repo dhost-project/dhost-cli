@@ -5,6 +5,7 @@ from getpass import getpass
 import requests
 
 from dhost_cli import settings
+from dhost_cli.db import init_database, fetch_token, save_token
 
 
 class DhostAPI:
@@ -23,12 +24,16 @@ class DhostAPI:
         API_URL=settings.DEFAULT_API_URL,
     ):
         self.username = username
-        self.token = token
+        self.token = token if token else fetch_token()
         self.OAUTH_SERVER_URL = OAUTH_SERVER_URL
         self.OAUTH_TOKEN_URL = OAUTH_TOKEN_URL
         self.OAUTH_CLIENT_ID = OAUTH_CLIENT_ID
         self.TOKEN_PREFIX = TOKEN_PREFIX
         self.API_URL = API_URL
+
+        init_database()
+
+        print(self.token)
 
         if self.token is None:
             self.authentify()
