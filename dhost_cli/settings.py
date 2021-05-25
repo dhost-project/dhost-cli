@@ -5,4 +5,4 @@ OAUTH_CLIENT_ID = 'dhost_cli'
 DEFAULT_API_URL = 'http://localhost:8000/api/'
 TOKEN_PREFIX = 'Bearer'
 
-DATABASE_NAME = 'storage.db'
+DATABASE_NAME = 'db.sqlite3'

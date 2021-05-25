@@ -23,33 +23,33 @@ class DhostAPI:
         TOKEN_PREFIX=settings.TOKEN_PREFIX,
         API_URL=settings.DEFAULT_API_URL,
     ):
-        init_database()
-
-        self.username = username
-        self.token = token if token else fetch_token()
         self.OAUTH_SERVER_URL = OAUTH_SERVER_URL
         self.OAUTH_TOKEN_URL = OAUTH_TOKEN_URL
         self.OAUTH_CLIENT_ID = OAUTH_CLIENT_ID
         self.TOKEN_PREFIX = TOKEN_PREFIX
         self.API_URL = API_URL
 
-        if self.token is None:
-            self.authentify()
+        self.username = username
+        self.token = token if token else self.get_token_or_authentify()
 
-        save_token(self.token)
+    def get_token_or_authentify(self):
+        """Get the token from the database if it exist, or authentify user"""
+        init_database()
+        token = fetch_token()
+        if token is None:
+            token = self.authentify()
+            save_token(token)
+        return token
 
     def authentify(self):
-        if self.username is None:
-            self.username = input('username: ')
-        self.get_token_auth()
-
-    def get_token_auth(self):
         """
         With the `Resource owner password-based` on a public client type
         this function will authenticate the user from his credentials and get
         a token to access the API
         """
         url = self.OAUTH_SERVER_URL + self.OAUTH_TOKEN_URL
+        if self.username is None:
+            self.username = input('username: ')
         password = getpass('password: ')
         cred = {
             'username': self.username,
@@ -59,8 +59,8 @@ class DhostAPI:
         }
         r = requests.post(url, data=cred)
         if r.status_code == 200:
-            self.token = r.json()['access_token']
-            return self.token
+            token = r.json()['access_token']
+            return token
         else:
             print('Authentication failure, code:', r.status_code)
 
