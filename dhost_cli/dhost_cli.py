@@ -23,6 +23,8 @@ class DhostAPI:
         TOKEN_PREFIX=settings.TOKEN_PREFIX,
         API_URL=settings.DEFAULT_API_URL,
     ):
+        init_database()
+
         self.username = username
         self.token = token if token else fetch_token()
         self.OAUTH_SERVER_URL = OAUTH_SERVER_URL
@@ -31,12 +33,10 @@ class DhostAPI:
         self.TOKEN_PREFIX = TOKEN_PREFIX
         self.API_URL = API_URL
 
-        init_database()
-
-        print(self.token)
-
         if self.token is None:
             self.authentify()
+
+        save_token(self.token)
 
     def authentify(self):
         if self.username is None:

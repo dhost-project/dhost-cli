@@ -29,10 +29,13 @@ def save_token(access_token, refresh_token='', expires=''):
 
 
 def fetch_token():
+    token = None
     con = sqlite3.connect(settings.DATABASE_NAME)
     cur = con.cursor()
     tokens = cur.execute("SELECT * FROM token")
-    token = tokens.fetchall()[0][0]
+    token_list = tokens.fetchall()
+    if len(token_list) >= 1:
+        token = token_list[0][0]
     con.commit()
     con.close()
     return token
