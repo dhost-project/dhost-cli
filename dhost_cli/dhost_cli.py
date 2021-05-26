@@ -6,7 +6,8 @@ from getpass import getpass
 import requests
 
 from dhost_cli import settings
-from dhost_cli.db import fetch_token, init_database, save_token, fetch_all_tokens
+from dhost_cli.db import (fetch_all_tokens, fetch_token, init_database,
+                          save_token)
 
 
 class DhostAPI:
@@ -41,7 +42,7 @@ class DhostAPI:
 
         if expires:
             expires_at = datetime.datetime.strptime(expires,
-                                                 "%Y-%m-%d %H:%M:%S.%f")
+                                                    "%Y-%m-%d %H:%M:%S.%f")
             if expires_at < now:
                 access_token, refresh_token, expires = self._send_refresh_token(
                     refresh_token)
@@ -82,7 +83,8 @@ class DhostAPI:
                 if 'error_description' in r.json():
                     print(r.json()['error_description'])
                 else:
-                    print('Authentication failure, status code:', r.status_code)
+                    print('Authentication failure, status code:',
+                          r.status_code)
                     print(r.json())
         raise Exception('Failed to authentify.')
 
