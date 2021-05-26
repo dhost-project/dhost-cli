@@ -31,14 +31,20 @@ def save_token(access_token, refresh_token='', expires=''):
     return access_token
 
 
-def fetch_token():
-    tokens = (None, None, None)
+def fetch_all_tokens():
+    token_list = None
     con = sqlite3.connect(settings.DATABASE_NAME)
     cur = con.cursor()
     token_list_query = cur.execute("SELECT * FROM token")
     token_list = token_list_query.fetchall()
-    if len(token_list) >= 1:
-        tokens = token_list[0]
     con.commit()
     con.close()
+    return token_list
+
+
+def fetch_token():
+    tokens = (None, None, None)
+    token_list = fetch_all_tokens()
+    if len(token_list) >= 1:
+        tokens = token_list[0]
     return tokens

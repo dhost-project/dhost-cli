@@ -34,7 +34,15 @@ def main():
 
     subparser = parser.add_subparsers(dest='cmd')
 
-    ipfs_dapp = subparser.add_parser('ipfs', help="Manage you IPFS dapps.")
+    token = subparser.add_parser('token', help="Manage your API tokens.")
+    token_sub = token.add_subparsers(dest='token_cmd')
+    token_sub.add_parser('list', help="List your API tokens.")
+    revoke_token = token_sub.add_parser('revoke', help="Revoke API token.")
+    revoke_token.add_argument('token_id', help="The token id from `list`.")
+    refresh_token = token_sub.add_parser('refresh', help="Refresh API token.")
+    refresh_token.add_argument('token_id', help="The token id from `list`.")
+
+    ipfs_dapp = subparser.add_parser('ipfs', help="Manage your IPFS dapps.")
     ipfs_dapp_sub = ipfs_dapp.add_subparsers(dest='ipfs_dapp_cmd')
     ipfs_dapp_sub.add_parser('list', help="List IPFS dapps.")
 
@@ -74,7 +82,19 @@ def main():
         print('Token: ' + instance.get_token())
         return 0
 
-    if args.cmd == 'ipfs':
+    if args.cmd == 'token':
+        instance = DhostAPI(
+            token=args.token,
+            username=args.username,
+            API_URL=args.api_url,
+        )
+        if args.token_cmd == 'list':
+            instance.list_tokens()
+        elif args.token_cmd == 'revoke':
+            instance.revoke_token(args.token_id)
+        elif args.token_cmd == 'refresh_token':
+            instance.refresh_token(args.token_id)
+    elif args.cmd == 'ipfs':
         ipfs_dapp_cmd = args.ipfs_dapp_cmd
         instance = IPFSDappManagement(
             token=args.token,
