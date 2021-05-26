@@ -22,47 +22,45 @@ def main():
         description='%(prog)s CLI tool to host decentralized websites.',
     )
 
-    parser.add_argument(
-        '-u',
-        '--username',
-        help="Connect to API with username and password.",
-    )
+    parser.add_argument('-u',
+                        '--username',
+                        help="Connect to API with username and password.")
     parser.add_argument('-t', '--token', help="Connect to API with token.")
-    parser.add_argument(
-        '-T',
-        '--get-token',
-        action='store_true',
-        help="Get your API token from username and password.",
-    )
-    parser.add_argument('-a', '--api_url', default=settings.DEFAULT_API_URL)
+    parser.add_argument('-T',
+                        '--get-token',
+                        action='store_true',
+                        help="Get your API token from username and password.")
+    parser.add_argument('-a', '--api-url', default=settings.DEFAULT_API_URL)
 
     subparser = parser.add_subparsers(dest='cmd')
 
     ipfs_dapp = subparser.add_parser('ipfs', help="Manage you IPFS dapps.")
     ipfs_dapp_sub = ipfs_dapp.add_subparsers(dest='ipfs_dapp_cmd')
-    # ipfs_dapp list
     ipfs_dapp_sub.add_parser('list', help="List IPFS dapps.")
-    # ipfs_dapp create
-    create_ipfs_dapp = ipfs_dapp_sub.add_parser(
-        'create',
-        help="Create a new IPFS dapp.",
-    )
-    create_ipfs_dapp.add_argument('-n', '--name')
-    # ipfs_dapp infos
+
+    create_ipfs_dapp = ipfs_dapp_sub.add_parser('create',
+                                                help="Create a new IPFS dapp.")
+    create_ipfs_dapp.add_argument('-n', '--dapp-name')
+    create_ipfs_dapp.add_argument('-b', '--build-command')
+    create_ipfs_dapp.add_argument('-d', '--docker')
+    create_ipfs_dapp.add_argument('-s', '--slug')
+
     detail_ipfs_dapp = ipfs_dapp_sub.add_parser(
         'infos', help="Get details about an IPFS dapps.")
     detail_ipfs_dapp.add_argument('ipfs_dapp_id')
-    # ipfs_dapp update
-    update_ipfs_dapp = ipfs_dapp_sub.add_parser(
-        'update',
-        help="Update an IPFS dapp.",
-    )
-    update_ipfs_dapp.add_argument('ipfs_dapp_id')
-    # ipfs_dapp delete
-    delete_ipfs_dapp = ipfs_dapp_sub.add_parser(
-        'delete',
-        help="Delete an IPFS dapp.",
-    )
+
+    update_ipfs_dapp = ipfs_dapp_sub.add_parser('update',
+                                                help="Update an IPFS dapp.")
+    update_ipfs_dapp.add_argument('IPFS-dapp-id')
+    update_ipfs_dapp.add_argument('-n', '--dapp-name', help="New dapp name.")
+    update_ipfs_dapp.add_argument('-b',
+                                  '--build-command',
+                                  help="New dapp build command.")
+    update_ipfs_dapp.add_argument('-d', '--docker', help="New dapp docker.")
+    update_ipfs_dapp.add_argument('-s', '--slug', help="New dapp slug.")
+
+    delete_ipfs_dapp = ipfs_dapp_sub.add_parser('delete',
+                                                help="Delete an IPFS dapp.")
     delete_ipfs_dapp.add_argument('ipfs_dapp_id')
 
     args = parser.parse_args()
@@ -74,6 +72,7 @@ def main():
             API_URL=args.api_url,
         )
         print('Token: ' + instance.get_token())
+        return 0
 
     if args.cmd == 'ipfs':
         ipfs_dapp_cmd = args.ipfs_dapp_cmd
@@ -89,7 +88,12 @@ def main():
         elif ipfs_dapp_cmd == 'update':
             instance.update(args.ipfs_dapp_id)
         elif ipfs_dapp_cmd == 'create':
-            instance.create(args.name)
+            instance.create(
+                args.dapp_name,
+                args.build_command,
+                args.docker,
+                args.slug,
+            )
         elif ipfs_dapp_cmd == 'delete':
             instance.delete(args.ipfs_dapp_id)
 

@@ -8,18 +8,14 @@ def init_database():
     cur = con.cursor()
 
     # Check if table 'token' exist, create it if it does not
-    table_token_count = cur.execute(
-        """SELECT count(name)
+    table_token_count = cur.execute("""SELECT count(name)
         FROM sqlite_master
-        WHERE type='table' AND name='token'"""
-    )
+        WHERE type='table' AND name='token'""")
     table_exist = table_token_count.fetchone()[0] == 1
     if not table_exist:
-        cur.execute(
-            """CREATE TABLE token
+        cur.execute("""CREATE TABLE token
             (access_token text, refresh_token text, expires text)
-            """
-        )
+            """)
 
     con.commit()
     con.close()
