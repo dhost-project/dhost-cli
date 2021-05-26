@@ -22,6 +22,7 @@ Dhost CLI
 CLI to access the DHost services.
 
 .. code-block::
+
    pip install dhost-cli
 
 .. code-block::
