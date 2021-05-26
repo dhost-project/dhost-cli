@@ -3,6 +3,7 @@
 from getpass import getpass
 
 import requests
+import datetime
 
 from dhost_cli import settings
 from dhost_cli.db import init_database, fetch_token, save_token
@@ -35,11 +36,19 @@ class DhostAPI:
     def get_token_or_authentify(self):
         """Get the token from the database if it exist, or authentify user"""
         init_database()
-        token = fetch_token()
-        if token is None:
-            token = self.authentify()
-            save_token(token)
-        return token
+        now = datetime.datetime.now()
+        access_token, refresh_token, expires = fetch_token()
+
+        print(access_token, '   -   ',  refresh_token, '   -   ', expires)
+        expires = datetime.datetime.strptime(expires, "%Y-%m-%d %H:%M:%S.%f")
+        if expires < now:
+            print('token expired')
+
+        if access_token is None:
+            access_token, refresh_token, expires_in = self.authentify()
+            expires = now + datetime.timedelta(seconds=expires_in)
+            save_token(access_token, refresh_token, expires)
+        return access_token
 
     def authentify(self):
         """
@@ -59,8 +68,10 @@ class DhostAPI:
         }
         r = requests.post(url, data=cred)
         if r.status_code == 200:
-            token = r.json()['access_token']
-            return token
+            access_token = r.json()['access_token']
+            refresh_token = r.json()['refresh_token']
+            expires_in = r.json()['expires_in']
+            return access_token, refresh_token, expires_in
         else:
             print('Authentication failure, code:', r.status_code)
 
