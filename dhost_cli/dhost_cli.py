@@ -62,22 +62,29 @@ class DhostAPI:
         url = self.OAUTH_SERVER_URL + self.OAUTH_TOKEN_URL
         if self.username is None:
             self.username = input('username: ')
-        password = getpass('password: ')
-        cred = {
-            'username': self.username,
-            'password': password,
-            'client_id': self.OAUTH_CLIENT_ID,
-            'grant_type': 'password'
-        }
-        r = requests.post(url, data=cred)
-        if r.status_code == 200:
-            access_token = r.json()['access_token']
-            refresh_token = r.json()['refresh_token']
-            expires_in = r.json()['expires_in']
-            return access_token, refresh_token, expires_in
-        else:
-            print('Authentication failure, code:', r.status_code)
-            print(r.json())
+
+        # Give the user 3 attempt to give the correct password
+        for retry in range(0, 3):
+            password = getpass('password: ')
+            cred = {
+                'username': self.username,
+                'password': password,
+                'client_id': self.OAUTH_CLIENT_ID,
+                'grant_type': 'password'
+            }
+            r = requests.post(url, data=cred)
+            if r.status_code == 200:
+                access_token = r.json()['access_token']
+                refresh_token = r.json()['refresh_token']
+                expires_in = r.json()['expires_in']
+                return access_token, refresh_token, expires_in
+            else:
+                if 'error_description' in r.json():
+                    print(r.json()['error_description'])
+                else:
+                    print('Authentication failure, status code:', r.status_code)
+                    print(r.json())
+        raise Exception('Failed to authentify.')
 
     def refresh_token(self, refresh_token):
         url = self.OAUTH_SERVER_URL + self.OAUTH_TOKEN_URL
