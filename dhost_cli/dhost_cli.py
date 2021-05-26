@@ -40,9 +40,9 @@ class DhostAPI:
         access_token, refresh_token, expires = fetch_token()
 
         if expires:
-            expires = datetime.datetime.strptime(expires,
+            expires_at = datetime.datetime.strptime(expires,
                                                  "%Y-%m-%d %H:%M:%S.%f")
-            if expires < now:
+            if expires_at < now:
                 access_token, refresh_token, expires = self.refresh_token(
                     refresh_token)
                 save_token(access_token, refresh_token, expires)

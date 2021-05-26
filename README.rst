@@ -21,9 +21,25 @@ Dhost CLI
 
 CLI to access the DHost services.
 
-```
-dhost-cli -h
-```
+.. code-block::cmd
+
+    dhost-cli -h
+    usage: dhost [-h] [-u USERNAME] [-t TOKEN] [-T] [-a API_URL] {ipfs} ...
+
+    dhost CLI tool to host decentralized websites.
+
+    positional arguments:
+      {ipfs}
+        ipfs                Manage you IPFS dapps.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -u USERNAME, --username USERNAME
+                            Connect to API with username and password.
+      -t TOKEN, --token TOKEN
+                            Connect to API with token.
+      -T, --get-token       Get your API token from username and password.
+      -a API_URL, --api-url API_URL
 
 * Free software: MIT license
 * Documentation: https://dhost-cli.readthedocs.io.
