@@ -36,13 +36,14 @@ class DhostAPI:
     def get_token_or_authentify(self):
         """Get the token from the database if it exist, or authentify user"""
         init_database()
-        now = datetime.datetime.now()
+        now = datetime.datetime.now() - datetime.timedelta(seconds=120)
         access_token, refresh_token, expires = fetch_token()
 
-        print(access_token, '   -   ',  refresh_token, '   -   ', expires)
-        expires = datetime.datetime.strptime(expires, "%Y-%m-%d %H:%M:%S.%f")
-        if expires < now:
-            print('token expired')
+        if expires:
+            expires = datetime.datetime.strptime(expires, "%Y-%m-%d %H:%M:%S.%f")
+            if expires < now:
+                access_token, refresh_token, expires = self.refresh_token(refresh_token)
+                save_token(access_token, refresh_token, expires)
 
         if access_token is None:
             access_token, refresh_token, expires_in = self.authentify()
@@ -74,6 +75,24 @@ class DhostAPI:
             return access_token, refresh_token, expires_in
         else:
             print('Authentication failure, code:', r.status_code)
+            print(r.json())
+
+    def refresh_token(self, refresh_token):
+        url = self.OAUTH_SERVER_URL + self.OAUTH_TOKEN_URL
+        cred = {
+            'refresh_token': refresh_token,
+            'client_id': self.OAUTH_CLIENT_ID,
+            'grant_type': 'refresh_token',
+        }
+        r = requests.post(url, data=cred)
+        if r.status_code == 200:
+            access_token = r.json()['access_token']
+            refresh_token = r.json()['refresh_token']
+            expires_in = r.json()['expires_in']
+            return access_token, refresh_token, expires_in
+        else:
+            print('Refresh token failure, code:', r.status_code)
+            print(r.json())
 
     def get_token(self):
         return self.token
