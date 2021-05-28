@@ -136,8 +136,9 @@ class DhostAPI:
 
     def list_tokens(self):
         token_list = fetch_all_tokens()
-        for tokens in token_list:
-            print("\nToken: {}".format(tokens[0]))
+        for index, tokens in enumerate(token_list, start=1):
+            print("_ [{}]".format(index), "_" * 10)
+            print("Token: {}".format(tokens[0]))
             print("Refresh token: {}".format(tokens[1]))
 
     def revoke_token(self, token_id):

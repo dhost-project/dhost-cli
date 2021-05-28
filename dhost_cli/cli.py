@@ -14,6 +14,7 @@ import sys
 from dhost_cli import settings
 from dhost_cli.dhost_cli import DhostAPI
 from dhost_cli.ipfs_dapp_api import IPFSDappManagement
+from dhost_cli.user_api import UserManagement
 
 
 def main():
@@ -41,6 +42,8 @@ def main():
     revoke_token.add_argument('token_id', help="The token id from `list`.")
     refresh_token = token_sub.add_parser('refresh', help="Refresh API token.")
     refresh_token.add_argument('token_id', help="The token id from `list`.")
+
+    user = subparser.add_parser('user', help="Manage your infos.")
 
     ipfs_dapp = subparser.add_parser('ipfs', help="Manage your IPFS dapps.")
     ipfs_dapp_sub = ipfs_dapp.add_subparsers(dest='ipfs_dapp_cmd')
@@ -94,6 +97,13 @@ def main():
             instance.revoke_token(args.token_id)
         elif args.token_cmd == 'refresh_token':
             instance.refresh_token(args.token_id)
+    elif args.cmd == 'user':
+        instance = UserManagement(
+            token=args.token,
+            username=args.username,
+            API_URL=args.api_url,
+        )
+        instance.read()
     elif args.cmd == 'ipfs':
         ipfs_dapp_cmd = args.ipfs_dapp_cmd
         instance = IPFSDappManagement(
