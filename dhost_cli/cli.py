@@ -14,6 +14,7 @@ import sys
 from dhost_cli import settings
 from dhost_cli.dhost_cli import DhostAPI
 from dhost_cli.ipfs_dapp_api import IPFSDappManagement
+from dhost_cli.github_api import GithubManagement
 from dhost_cli.user_api import UserManagement
 
 
@@ -74,6 +75,10 @@ def main():
                                                 help="Delete an IPFS dapp.")
     delete_ipfs_dapp.add_argument('ipfs_dapp_id')
 
+    github = subparser.add_parser('github', help="Manage your github repos.")
+    github_sub = github.add_subparsers(dest='github_cmd')
+    github_sub.add_parser('list')
+
     args = parser.parse_args()
 
     if args.get_token:
@@ -126,6 +131,14 @@ def main():
             )
         elif ipfs_dapp_cmd == 'delete':
             instance.delete(args.ipfs_dapp_id)
+    elif args.cmd == 'github':
+        instance = GithubManagement(
+            token=args.token,
+            username=args.username,
+            API_URL=args.api_url,
+        )
+        if args.github_cmd == 'list':
+            instance.list()
 
     return 0
 

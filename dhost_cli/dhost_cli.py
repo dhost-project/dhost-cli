@@ -15,6 +15,7 @@ class DhostAPI:
     A common class to call the Dhost API,
     You should subclass this to implement call to the API.
     """
+
     def __init__(
         self,
         token=None,
@@ -83,8 +84,7 @@ class DhostAPI:
                 if 'error_description' in r.json():
                     print(r.json()['error_description'])
                 else:
-                    print('Authentication failure, status code:',
-                          r.status_code)
+                    print('Authentication failure, status code:', r.status_code)
                     print(r.json())
         raise Exception('Failed to authentify.')
 
@@ -160,8 +160,8 @@ class DhostAPI:
         if response.status_code == 200:
             return response
         else:
-            print('Message:\n{}'.format(response.content))
-            raise Exception('Error {}'.format(response.status_code))
+            raise Exception('Error {}\n{}'.format(response.status_code,
+                                                  response.content))
 
     def put(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a PUT request to the API"""

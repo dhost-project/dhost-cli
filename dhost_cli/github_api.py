@@ -2,9 +2,9 @@ from .dhost_cli import DhostAPI
 from .utils import get_user_str_input
 
 
-class UserManagement(DhostAPI):
+class GithubManagement(DhostAPI):
 
-    def read(self):
-        uri = 'v1/users/me/'
+    def list(self):
+        uri = 'v1/github/repositories/'
         response = self.get(uri=uri)
         print(response.json())
