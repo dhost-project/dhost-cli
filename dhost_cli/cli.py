@@ -78,6 +78,8 @@ def main():
     github = subparser.add_parser('github', help="Manage your github repos.")
     github_sub = github.add_subparsers(dest='github_cmd')
     github_sub.add_parser('list')
+    github_sub.add_parser('me')
+    github_sub.add_parser('scopes')
 
     args = parser.parse_args()
 
@@ -139,6 +141,10 @@ def main():
         )
         if args.github_cmd == 'list':
             instance.list()
+        elif args.github_cmd == 'me':
+            instance.me()
+        elif args.github_cmd == 'scopes':
+            instance.scopes()
 
     return 0
 
