@@ -1,5 +1,4 @@
 from .dhost_cli import DhostAPI
-from .utils import get_user_str_input
 
 
 class UserManagement(DhostAPI):

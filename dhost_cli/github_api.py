@@ -1,5 +1,4 @@
 from .dhost_cli import DhostAPI
-from .utils import get_user_str_input
 
 
 class GithubManagement(DhostAPI):
@@ -10,7 +9,24 @@ class GithubManagement(DhostAPI):
         print(response.json())
 
     def list(self):
-        uri = 'v1/github/repositories/'
+        uri = 'v1/github/'
+        response = self.get(uri=uri)
+        print(response.json())
+
+    def fetch_all(self):
+        """Update the repo from the Github API"""
+        uri = 'v1/github/fetch'
+        response = self.get(uri=uri)
+        print(response.json())
+
+    def retrieve(self, repo_id):
+        uri = f'v1/github/{repo_id}/'
+        response = self.get(uri=uri)
+        print(response.json())
+
+    def fetch_repo(self, repo_id):
+        """Update the repo from the Github API"""
+        uri = f'v1/github/{repo_id}/fetch/'
         response = self.get(uri=uri)
         print(response.json())
 

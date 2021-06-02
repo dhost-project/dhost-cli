@@ -44,7 +44,7 @@ def main():
     refresh_token = token_sub.add_parser('refresh', help="Refresh API token.")
     refresh_token.add_argument('token_id', help="The token id from `list`.")
 
-    user = subparser.add_parser('user', help="Manage your infos.")
+    subparser.add_parser('me', help="Manage your infos.")
 
     ipfs_dapp = subparser.add_parser('ipfs', help="Manage your IPFS dapps.")
     ipfs_dapp_sub = ipfs_dapp.add_subparsers(dest='ipfs_dapp_cmd')
@@ -78,6 +78,10 @@ def main():
     github = subparser.add_parser('github', help="Manage your github repos.")
     github_sub = github.add_subparsers(dest='github_cmd')
     github_sub.add_parser('list')
+    read_github = github_sub.add_parser('read')
+    read_github.add_argument('repo')
+    read_github = github_sub.add_parser('fetch')
+    read_github.add_argument('repo', nargs="?")
     github_sub.add_parser('me')
     github_sub.add_parser('scopes')
 
@@ -104,7 +108,7 @@ def main():
             instance.revoke_token(args.token_id)
         elif args.token_cmd == 'refresh_token':
             instance.refresh_token(args.token_id)
-    elif args.cmd == 'user':
+    elif args.cmd == 'me':
         instance = UserManagement(
             token=args.token,
             username=args.username,
@@ -141,6 +145,13 @@ def main():
         )
         if args.github_cmd == 'list':
             instance.list()
+        elif args.github_cmd == 'read':
+            instance.retrieve(args.repo)
+        elif args.github_cmd == 'fetch':
+            if args.repo:
+                instance.fetch_repo(args.repo)
+            else:
+                instance.fetch_all()
         elif args.github_cmd == 'me':
             instance.me()
         elif args.github_cmd == 'scopes':
