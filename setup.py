@@ -55,6 +55,6 @@ setup(
     project_urls={
         "Bug Tracker": "https://github.com/dhost-project/dhost-cli/issues",
     },
-    version='0.1.1',
+    version='0.1.2',
     zip_safe=False,
 )

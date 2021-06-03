@@ -9,13 +9,12 @@ class GithubManagement(DhostAPI):
         print(response.json())
 
     def list(self):
-<<<<<<< HEAD
         uri = 'v1/github/'
         response = self.get(uri=uri)
         print(response.json())
 
     def fetch_all(self):
-        """Update the repo from the Github API"""
+        """Update all repos from the Github API"""
         uri = 'v1/github/fetch'
         response = self.get(uri=uri)
         print(response.json())
@@ -28,9 +27,6 @@ class GithubManagement(DhostAPI):
     def fetch_repo(self, repo_id):
         """Update the repo from the Github API"""
         uri = f'v1/github/{repo_id}/fetch/'
-=======
-        uri = 'v1/github/repos/'
->>>>>>> 8687310... feat: repo name
         response = self.get(uri=uri)
         print(response.json())
 
