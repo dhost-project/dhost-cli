@@ -78,10 +78,15 @@ def main():
     github = subparser.add_parser('github', help="Manage your github repos.")
     github_sub = github.add_subparsers(dest='github_cmd')
     github_sub.add_parser('list')
+<<<<<<< HEAD
     read_github = github_sub.add_parser('read')
     read_github.add_argument('repo')
     read_github = github_sub.add_parser('fetch')
     read_github.add_argument('repo', nargs="?")
+=======
+    details = github_sub.add_parser('details')
+    details.add_argument('-r', '--repository', help='Github repository name')
+>>>>>>> 8687310... feat: repo name
     github_sub.add_parser('me')
     github_sub.add_parser('scopes')
 
