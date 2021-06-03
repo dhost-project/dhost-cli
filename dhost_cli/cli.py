@@ -11,7 +11,7 @@
 import argparse
 import sys
 
-from dhost_cli import settings
+from dhost_cli import settings, __version__
 from dhost_cli.dhost_cli import DhostAPI
 from dhost_cli.ipfs_dapp_api import IPFSDappManagement
 from dhost_cli.github_api import GithubManagement
@@ -24,6 +24,7 @@ def main():
         description='%(prog)s CLI tool to host decentralized websites.',
     )
 
+    parser.add_argument('-v', '--version', action='store_true')
     parser.add_argument('-u',
                         '--username',
                         help="Connect to API with username and password.")
@@ -85,18 +86,21 @@ def main():
     github_sub.add_parser('me')
     github_sub.add_parser('scopes')
 
-    args = parser.parse_args()
+    dispatch(parser.parse_args())
+    return 0
 
-    if args.get_token:
+
+def dispatch(args):
+    if args.version:
+        print('dhost-cli version {}'.format(__version__))
+    elif args.get_token:
         instance = DhostAPI(
             token=args.token,
             username=args.username,
             API_URL=args.api_url,
         )
         print('Token: ' + instance.get_token())
-        return 0
-
-    if args.cmd == 'token':
+    elif args.cmd == 'token':
         instance = DhostAPI(
             token=args.token,
             username=args.username,
@@ -156,8 +160,6 @@ def main():
             instance.me()
         elif args.github_cmd == 'scopes':
             instance.scopes()
-
-    return 0
 
 
 if __name__ == "__main__":
