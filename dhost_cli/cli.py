@@ -14,6 +14,8 @@ import sys
 from dhost_cli import settings
 from dhost_cli.dhost_cli import DhostAPI
 from dhost_cli.ipfs_dapp_api import IPFSDappManagement
+from dhost_cli.github_api import GithubManagement
+from dhost_cli.user_api import UserManagement
 
 
 def main():
@@ -34,7 +36,17 @@ def main():
 
     subparser = parser.add_subparsers(dest='cmd')
 
-    ipfs_dapp = subparser.add_parser('ipfs', help="Manage you IPFS dapps.")
+    token = subparser.add_parser('token', help="Manage your API tokens.")
+    token_sub = token.add_subparsers(dest='token_cmd')
+    token_sub.add_parser('list', help="List your API tokens.")
+    revoke_token = token_sub.add_parser('revoke', help="Revoke API token.")
+    revoke_token.add_argument('token_id', help="The token id from `list`.")
+    refresh_token = token_sub.add_parser('refresh', help="Refresh API token.")
+    refresh_token.add_argument('token_id', help="The token id from `list`.")
+
+    subparser.add_parser('me', help="Manage your infos.")
+
+    ipfs_dapp = subparser.add_parser('ipfs', help="Manage your IPFS dapps.")
     ipfs_dapp_sub = ipfs_dapp.add_subparsers(dest='ipfs_dapp_cmd')
     ipfs_dapp_sub.add_parser('list', help="List IPFS dapps.")
 
@@ -63,6 +75,16 @@ def main():
                                                 help="Delete an IPFS dapp.")
     delete_ipfs_dapp.add_argument('ipfs_dapp_id')
 
+    github = subparser.add_parser('github', help="Manage your github repos.")
+    github_sub = github.add_subparsers(dest='github_cmd')
+    github_sub.add_parser('list')
+    read_github = github_sub.add_parser('read')
+    read_github.add_argument('repo')
+    read_github = github_sub.add_parser('fetch')
+    read_github.add_argument('repo', nargs="?")
+    github_sub.add_parser('me')
+    github_sub.add_parser('scopes')
+
     args = parser.parse_args()
 
     if args.get_token:
@@ -74,7 +96,26 @@ def main():
         print('Token: ' + instance.get_token())
         return 0
 
-    if args.cmd == 'ipfs':
+    if args.cmd == 'token':
+        instance = DhostAPI(
+            token=args.token,
+            username=args.username,
+            API_URL=args.api_url,
+        )
+        if args.token_cmd == 'list':
+            instance.list_tokens()
+        elif args.token_cmd == 'revoke':
+            instance.revoke_token(args.token_id)
+        elif args.token_cmd == 'refresh_token':
+            instance.refresh_token(args.token_id)
+    elif args.cmd == 'me':
+        instance = UserManagement(
+            token=args.token,
+            username=args.username,
+            API_URL=args.api_url,
+        )
+        instance.read()
+    elif args.cmd == 'ipfs':
         ipfs_dapp_cmd = args.ipfs_dapp_cmd
         instance = IPFSDappManagement(
             token=args.token,
@@ -96,6 +137,25 @@ def main():
             )
         elif ipfs_dapp_cmd == 'delete':
             instance.delete(args.ipfs_dapp_id)
+    elif args.cmd == 'github':
+        instance = GithubManagement(
+            token=args.token,
+            username=args.username,
+            API_URL=args.api_url,
+        )
+        if args.github_cmd == 'list':
+            instance.list()
+        elif args.github_cmd == 'read':
+            instance.retrieve(args.repo)
+        elif args.github_cmd == 'fetch':
+            if args.repo:
+                instance.fetch_repo(args.repo)
+            else:
+                instance.fetch_all()
+        elif args.github_cmd == 'me':
+            instance.me()
+        elif args.github_cmd == 'scopes':
+            instance.scopes()
 
     return 0
 

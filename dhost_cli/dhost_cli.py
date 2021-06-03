@@ -6,7 +6,8 @@ from getpass import getpass
 import requests
 
 from dhost_cli import settings
-from dhost_cli.db import fetch_token, init_database, save_token
+from dhost_cli.db import (fetch_all_tokens, fetch_token, init_database,
+                          save_token)
 
 
 class DhostAPI:
@@ -14,6 +15,7 @@ class DhostAPI:
     A common class to call the Dhost API,
     You should subclass this to implement call to the API.
     """
+
     def __init__(
         self,
         token=None,
@@ -41,9 +43,9 @@ class DhostAPI:
 
         if expires:
             expires_at = datetime.datetime.strptime(expires,
-                                                 "%Y-%m-%d %H:%M:%S.%f")
+                                                    "%Y-%m-%d %H:%M:%S.%f")
             if expires_at < now:
-                access_token, refresh_token, expires = self.refresh_token(
+                access_token, refresh_token, expires = self._send_refresh_token(
                     refresh_token)
                 save_token(access_token, refresh_token, expires)
 
@@ -86,7 +88,8 @@ class DhostAPI:
                     print(r.json())
         raise Exception('Failed to authentify.')
 
-    def refresh_token(self, refresh_token):
+    def _send_refresh_token(self, refresh_token):
+        """Send a request to the OAuth server to refresh the passed token"""
         url = self.OAUTH_SERVER_URL + self.OAUTH_TOKEN_URL
         cred = {
             'refresh_token': refresh_token,
@@ -102,6 +105,9 @@ class DhostAPI:
         else:
             print('Refresh token failure, code:', r.status_code)
             print(r.json())
+
+    def refresh_token(self, token_id):
+        print('Refreshing token {}.'.format(token_id))
 
     def get_token(self):
         return self.token
@@ -128,6 +134,16 @@ class DhostAPI:
         headers = self._get_authorization_header(token=token)
         return url, headers
 
+    def list_tokens(self):
+        token_list = fetch_all_tokens()
+        for index, tokens in enumerate(token_list, start=1):
+            print("_ [{}]".format(index), "_" * 10)
+            print("Token: {}".format(tokens[0]))
+            print("Refresh token: {}".format(tokens[1]))
+
+    def revoke_token(self, token_id):
+        print(token_id)
+
     def post(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a POST request to the API"""
         url, headers = self._prepare_api_request(url=url,
@@ -144,8 +160,8 @@ class DhostAPI:
         if response.status_code == 200:
             return response
         else:
-            print('Message:\n{}'.format(response.content))
-            raise Exception('Error {}'.format(response.status_code))
+            raise Exception('Error {}\n{}'.format(response.status_code,
+                                                  response.content))
 
     def put(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a PUT request to the API"""
