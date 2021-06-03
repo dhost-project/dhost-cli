@@ -11,10 +11,10 @@
 import argparse
 import sys
 
-from dhost_cli import settings, __version__
+from dhost_cli import __version__, settings
 from dhost_cli.dhost_cli import DhostAPI
-from dhost_cli.ipfs_dapp_api import IPFSDappManagement
 from dhost_cli.github_api import GithubManagement
+from dhost_cli.ipfs_dapp_api import IPFSDappManagement
 from dhost_cli.user_api import UserManagement
 
 
