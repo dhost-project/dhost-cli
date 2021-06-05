@@ -10,29 +10,22 @@ from dhost_cli.db import (fetch_all_tokens, fetch_token, init_database,
                           save_token)
 
 
-class DhostAPI:
-    """
-    A common class to call the Dhost API,
-    You should subclass this to implement call to the API.
-    """
+class Client:
+
+    API_URL = settings.DEFAULT_API_URL
+    TOKEN_PREFIX = settings.TOKEN_PREFIX
+    OAUTH_SERVER_URL = settings.OAUTH_SERVER_URL
+    OAUTH_TOKEN_URL = settings.OAUTH_TOKEN_URL
+    OAUTH_CLIENT_ID = settings.OAUTH_CLIENT_ID
 
     def __init__(
         self,
         token=None,
         username=None,
-        OAUTH_SERVER_URL=settings.OAUTH_SERVER_URL,
-        OAUTH_TOKEN_URL=settings.OAUTH_TOKEN_URL,
-        OAUTH_CLIENT_ID=settings.OAUTH_CLIENT_ID,
-        TOKEN_PREFIX=settings.TOKEN_PREFIX,
-        API_URL=settings.DEFAULT_API_URL,
+        password=None,
     ):
-        self.OAUTH_SERVER_URL = OAUTH_SERVER_URL
-        self.OAUTH_TOKEN_URL = OAUTH_TOKEN_URL
-        self.OAUTH_CLIENT_ID = OAUTH_CLIENT_ID
-        self.TOKEN_PREFIX = TOKEN_PREFIX
-        self.API_URL = API_URL
-
         self.username = username
+        self.password = password
         self.token = token if token else self.get_token_or_authentify()
 
     def get_token_or_authentify(self):
@@ -61,39 +54,57 @@ class DhostAPI:
         this function will authenticate the user from his credentials and get
         a token to access the API
         """
-        url = self.OAUTH_SERVER_URL + self.OAUTH_TOKEN_URL
-        if self.username is None:
-            self.username = input('username: ')
+        if self.username:
+            username = self.username
+        else:
+            username = input('username: ')
 
         # Give the user 3 attempt to give the correct password
         for retry in range(0, 3):
-            password = getpass('password: ')
-            cred = {
-                'username': self.username,
-                'password': password,
-                'client_id': self.OAUTH_CLIENT_ID,
-                'grant_type': 'password'
-            }
-            r = requests.post(url, data=cred)
-            if r.status_code == 200:
-                access_token = r.json()['access_token']
-                refresh_token = r.json()['refresh_token']
-                expires_in = r.json()['expires_in']
-                return access_token, refresh_token, expires_in
+            if self.password:
+                password = self.password
             else:
-                if 'error_description' in r.json():
-                    print(r.json()['error_description'])
-                else:
-                    print('Authentication failure, status code:', r.status_code)
-                    print(r.json())
+                password = getpass('password: ')
+            try:
+                access_token, refresh_token, expires_in = self._get_token_oauth(
+                    username=username, password=password)
+                if access_token:
+                    return access_token, refresh_token, expires_in
+            except Exception as e:
+                print(e)
+
         raise Exception('Failed to authentify.')
 
-    def _send_refresh_token(self, refresh_token):
+    @classmethod
+    def _get_token_oauth(cls, username, password):
+        url = cls.OAUTH_SERVER_URL + cls.OAUTH_TOKEN_URL
+        cred = {
+            'username': username,
+            'password': password,
+            'client_id': cls.OAUTH_CLIENT_ID,
+            'grant_type': 'password'
+        }
+        r = requests.post(url, data=cred)
+        if r.status_code == 200:
+            access_token = r.json()['access_token']
+            refresh_token = r.json()['refresh_token']
+            expires_in = r.json()['expires_in']
+            return access_token, refresh_token, expires_in
+        else:
+            if 'error_description' in r.json():
+                raise Exception(r.json()['error_description'])
+            else:
+                raise Exception(
+                    'Failed to authentify with credentials given. Code: {}'
+                    '\nMessage: {}.'.format(r.status_code, r.json()))
+
+    @classmethod
+    def _send_refresh_token(cls, refresh_token):
         """Send a request to the OAuth server to refresh the passed token"""
-        url = self.OAUTH_SERVER_URL + self.OAUTH_TOKEN_URL
+        url = cls.OAUTH_SERVER_URL + cls.OAUTH_TOKEN_URL
         cred = {
             'refresh_token': refresh_token,
-            'client_id': self.OAUTH_CLIENT_ID,
+            'client_id': cls.OAUTH_CLIENT_ID,
             'grant_type': 'refresh_token',
         }
         r = requests.post(url, data=cred)
@@ -103,8 +114,9 @@ class DhostAPI:
             expires_in = r.json()['expires_in']
             return access_token, refresh_token, expires_in
         else:
-            print('Refresh token failure, code:', r.status_code)
-            print(r.json())
+            raise Exception(
+                'Failed to refresh token. Code: {}\nMessage: {}.'.format(
+                    r.status_code, r.json()))
 
     def refresh_token(self, token_id):
         print('Refreshing token {}.'.format(token_id))
@@ -200,3 +212,19 @@ class DhostAPI:
         file = ''
         response = self.post(file=file, *args, **kwargs)
         return response
+
+
+from dhost_cli.api import github, ipfs, users
+
+Client.github_list = github.list
+Client.github_fetch_all = github.fetch_all
+Client.github_retrieve = github.retrieve
+Client.github_fetch_repo = github.fetch_repo
+Client.ipfs_list = ipfs.list
+Client.ipfs_read = ipfs.read
+Client.ipfs_update = ipfs.update
+Client.ipfs_create = ipfs.create
+Client.ipfs_delete = ipfs.delete
+Client.ipfs_build = ipfs.build
+Client.ipfs_deploy = ipfs.deploy
+Client.users_me = users.me

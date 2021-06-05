@@ -11,11 +11,8 @@
 import argparse
 import sys
 
-from dhost_cli import settings, __version__
-from dhost_cli.dhost_cli import DhostAPI
-from dhost_cli.ipfs_dapp_api import IPFSDappManagement
-from dhost_cli.github_api import GithubManagement
-from dhost_cli.user_api import UserManagement
+from dhost_cli import __version__
+from dhost_cli.api.client import Client
 
 
 def main():
@@ -28,12 +25,14 @@ def main():
     parser.add_argument('-u',
                         '--username',
                         help="Connect to API with username and password.")
+    parser.add_argument('-p',
+                        '--password',
+                        help="Connect to API with username and password.")
     parser.add_argument('-t', '--token', help="Connect to API with token.")
     parser.add_argument('-T',
                         '--get-token',
                         action='store_true',
                         help="Get your API token from username and password.")
-    parser.add_argument('-a', '--api-url', default=settings.DEFAULT_API_URL)
 
     subparser = parser.add_subparsers(dest='cmd')
 
@@ -83,83 +82,64 @@ def main():
     read_github.add_argument('repo')
     read_github = github_sub.add_parser('fetch')
     read_github.add_argument('repo', nargs="?")
-    github_sub.add_parser('me')
-    github_sub.add_parser('scopes')
 
-    dispatch(parser.parse_args())
+    dispatch(parser)
+
     return 0
 
 
-def dispatch(args):
+def dispatch(parser):
+    args = parser.parse_args()
+
+    client = Client(
+        token=args.token,
+        username=args.username,
+        password=args.password,
+    )
+
     if args.version:
         print('dhost-cli version {}'.format(__version__))
     elif args.get_token:
-        instance = DhostAPI(
-            token=args.token,
-            username=args.username,
-            API_URL=args.api_url,
-        )
-        print('Token: ' + instance.get_token())
+        print('Token: ' + client.get_token())
+
     elif args.cmd == 'token':
-        instance = DhostAPI(
-            token=args.token,
-            username=args.username,
-            API_URL=args.api_url,
-        )
         if args.token_cmd == 'list':
-            instance.list_tokens()
+            client.list_tokens()
         elif args.token_cmd == 'revoke':
-            instance.revoke_token(args.token_id)
+            client.revoke_token(args.token_id)
         elif args.token_cmd == 'refresh_token':
-            instance.refresh_token(args.token_id)
+            client.refresh_token(args.token_id)
+
     elif args.cmd == 'me':
-        instance = UserManagement(
-            token=args.token,
-            username=args.username,
-            API_URL=args.api_url,
-        )
-        instance.read()
+        client.users_me()
+
     elif args.cmd == 'ipfs':
-        ipfs_dapp_cmd = args.ipfs_dapp_cmd
-        instance = IPFSDappManagement(
-            token=args.token,
-            username=args.username,
-            API_URL=args.api_url,
-        )
-        if ipfs_dapp_cmd == 'list':
-            instance.list()
-        elif ipfs_dapp_cmd == 'infos':
-            instance.read(args.ipfs_dapp_id)
-        elif ipfs_dapp_cmd == 'update':
-            instance.update(args.ipfs_dapp_id)
-        elif ipfs_dapp_cmd == 'create':
-            instance.create(
+        if args.ipfs_dapp_cmd == 'list':
+            client.ipfs_list()
+        elif args.ipfs_dapp_cmd == 'infos':
+            client.ipfs_read(args.ipfs_dapp_id)
+        elif args.ipfs_dapp_cmd == 'update':
+            client.ipfs_update(args.ipfs_dapp_id)
+        elif args.ipfs_dapp_cmd == 'create':
+            client.ipfs_create(
                 args.dapp_name,
                 args.build_command,
                 args.docker,
                 args.slug,
             )
-        elif ipfs_dapp_cmd == 'delete':
-            instance.delete(args.ipfs_dapp_id)
+        elif args.ipfs_dapp_cmd == 'delete':
+            client.ipfs_delete(args.ipfs_dapp_id)
+
     elif args.cmd == 'github':
-        instance = GithubManagement(
-            token=args.token,
-            username=args.username,
-            API_URL=args.api_url,
-        )
         if args.github_cmd == 'list':
-            instance.list()
+            client.github_list()
         elif args.github_cmd == 'read':
-            instance.retrieve(args.repo)
+            client.github_retrieve(args.repo)
         elif args.github_cmd == 'fetch':
             if args.repo:
-                instance.fetch_repo(args.repo)
+                client.github_fetch_repo(args.repo)
             else:
-                instance.fetch_all()
-        elif args.github_cmd == 'me':
-            instance.me()
-        elif args.github_cmd == 'scopes':
-            instance.scopes()
+                client.github_fetch_all()
 
 
 if __name__ == "__main__":
