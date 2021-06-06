@@ -187,7 +187,11 @@ class Client:
         url, headers = self._prepare_api_request(url=url,
                                                  uri=uri,
                                                  headers=headers)
-        return requests.post(url, headers=headers, *args, **kwargs)
+        response = requests.post(url, headers=headers, *args, **kwargs)
+        if response.status_code == 201:
+            return response
+        else:
+            self.raise_response_errors(response)
 
     def get(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a GET request to the API"""
@@ -206,7 +210,10 @@ class Client:
                                                  uri=uri,
                                                  headers=headers)
         response = requests.put(url, headers=headers, *args, **kwargs)
-        return response
+        if response.status_code == 200:
+            return response
+        else:
+            self.raise_response_errors(response)
 
     def patch(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a PUT request to the API"""
@@ -214,7 +221,10 @@ class Client:
                                                  uri=uri,
                                                  headers=headers)
         response = requests.patch(url, headers=headers, *args, **kwargs)
-        return response
+        if response.status_code == 200:
+            return response
+        else:
+            self.raise_response_errors(response)
 
     def delete(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a DELETE request to the API"""
@@ -222,7 +232,10 @@ class Client:
                                                  uri=uri,
                                                  headers=headers)
         response = requests.delete(url, headers=headers, *args, **kwargs)
-        return response
+        if response.status_code == 204:
+            return response
+        else:
+            self.raise_response_errors(response)
 
     def head(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a HEAD request to the API"""
@@ -230,7 +243,10 @@ class Client:
                                                  uri=uri,
                                                  headers=headers)
         response = requests.head(url, *args, **kwargs)
-        return response
+        if response.status_code == 200:
+            return response
+        else:
+            self.raise_response_errors(response)
 
     def post_file(self, file_paht, *args, **kwargs):
         # TODO get file here
