@@ -27,8 +27,9 @@ def update(self, dapp_id, *args, **kwargs):
 def create(self, name=None, command=None, docker=None, slug=None):
     """Create an IPFS dapp"""
     uri = 'v1/ipfs/'
+    name = get_user_str_input(name, 'IPFS dapp name')
     data = {
-        'name': get_user_str_input(name, 'IPFS dapp name'),
+        'name': name,
         'command': get_user_str_input(command, 'Build command'),
         'docker': get_user_str_input(docker, 'Docker image'),
         'slug': get_user_str_input(slug, 'Slug'),
