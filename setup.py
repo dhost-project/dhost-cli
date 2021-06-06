@@ -13,6 +13,7 @@ requirements = ['requests']
 
 setup_requirements = [
     'pytest-runner',
+    'colorama',
 ]
 
 test_requirements = [

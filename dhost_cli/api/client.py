@@ -1,6 +1,7 @@
 """Main module."""
 
 import datetime
+import json
 from getpass import getpass
 
 import requests
@@ -8,6 +9,14 @@ import requests
 from dhost_cli import settings
 from dhost_cli.db import (fetch_all_tokens, fetch_token, init_database,
                           save_token)
+
+try:
+    from colorama import init, Fore, Back, Style
+    init()
+except (ImportError, OSError):
+    HAS_COLORAMA = False
+else:
+    HAS_COLORAMA = True
 
 
 class Client:
@@ -23,10 +32,14 @@ class Client:
         token=None,
         username=None,
         password=None,
+        raise_exceptions=True,
+        color=False,
     ):
         self.username = username
         self.password = password
         self.token = token if token else self.get_token_or_authentify()
+        self.raise_exceptions = raise_exceptions
+        self.color = color and HAS_COLORAMA
 
     def get_token_or_authentify(self):
         """Get the token from the database if it exist, or authentify user"""
@@ -92,11 +105,11 @@ class Client:
             return access_token, refresh_token, expires_in
         else:
             if 'error_description' in r.json():
-                raise Exception(r.json()['error_description'])
+                error = r.json()['error_description']
             else:
-                raise Exception(
-                    'Failed to authentify with credentials given. Code: {}'
-                    '\nMessage: {}.'.format(r.status_code, r.json()))
+                error = ('Failed to authentify with credentials given. Code: {}'
+                         '\nMessage: {}.'.format(r.status_code, r.json()))
+            cls.raise_response_errors(message=error)
 
     @classmethod
     def _send_refresh_token(cls, refresh_token):
@@ -114,9 +127,9 @@ class Client:
             expires_in = r.json()['expires_in']
             return access_token, refresh_token, expires_in
         else:
-            raise Exception(
-                'Failed to refresh token. Code: {}\nMessage: {}.'.format(
-                    r.status_code, r.json()))
+            error = ('Failed to refresh token. Code: {}\nMessage: {}.'.format(
+                r.status_code, r.json()))
+            cls.raise_response_errors(message=error)
 
     def refresh_token(self, token_id):
         print('Refreshing token {}.'.format(token_id))
@@ -156,6 +169,19 @@ class Client:
     def revoke_token(self, token_id):
         print(token_id)
 
+    @classmethod
+    def raise_response_errors(cls, response=None, message=None):
+        if not message:
+            content = response.content
+            res_json = json.loads(content.decode())
+            status_code = response.status_code
+            if 'detail' in res_json:
+                detail = res_json['detail']
+                message = f'({status_code}) {detail}'
+            else:
+                message = f'Error ({status_code}): {content}'
+        raise Exception(message)
+
     def post(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a POST request to the API"""
         url, headers = self._prepare_api_request(url=url,
@@ -172,8 +198,7 @@ class Client:
         if response.status_code == 200:
             return response
         else:
-            raise Exception('Error {}\n{}'.format(response.status_code,
-                                                  response.content))
+            self.raise_response_errors(response)
 
     def put(self, uri=None, url=None, headers=None, *args, **kwargs):
         """Send a PUT request to the API"""
@@ -218,11 +243,20 @@ from dhost_cli.api import github, ipfs, users
 
 
 def call_wrapper(function):
-    def wrap(*args, **kwargs):
-        try:
-            function(*args, **kwargs)
-        except Exception as e:
-            print(e)
+
+    def wrap(self, *args, **kwargs):
+        if self.raise_exceptions:
+            return function(self, *args, **kwargs)
+        else:
+            try:
+                return function(self, *args, **kwargs)
+            except Exception as e:
+                if self.color:
+                    print(Fore.RED + str(e))
+                else:
+                    print(e)
+                return None
+
     return wrap
 
 

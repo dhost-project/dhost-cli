@@ -33,6 +33,12 @@ def main():
                         '--get-token',
                         action='store_true',
                         help="Get your API token from username and password.")
+    parser.add_argument('--raise-exceptions',
+                        action='store_true',
+                        help="Raise exceptions instead of just printing it.")
+    parser.add_argument('--disable-color',
+                        action='store_true',
+                        help="Disable colored output.")
 
     subparser = parser.add_subparsers(dest='cmd')
 
@@ -95,6 +101,8 @@ def dispatch(parser):
         token=args.token,
         username=args.username,
         password=args.password,
+        raise_exceptions=args.raise_exceptions,
+        color=not args.disable_color,
     )
 
     if args.version:
