@@ -216,15 +216,25 @@ class Client:
 
 from dhost_cli.api import github, ipfs, users
 
-Client.github_list = github.list
-Client.github_fetch_all = github.fetch_all
-Client.github_retrieve = github.retrieve
-Client.github_fetch_repo = github.fetch_repo
-Client.ipfs_list = ipfs.list
-Client.ipfs_read = ipfs.read
-Client.ipfs_update = ipfs.update
-Client.ipfs_create = ipfs.create
-Client.ipfs_delete = ipfs.delete
-Client.ipfs_build = ipfs.build
-Client.ipfs_deploy = ipfs.deploy
-Client.users_me = users.me
+
+def call_wrapper(function):
+    def wrap(*args, **kwargs):
+        try:
+            function(*args, **kwargs)
+        except Exception as e:
+            print(e)
+    return wrap
+
+
+Client.github_list = call_wrapper(github.list)
+Client.github_fetch_all = call_wrapper(github.fetch_all)
+Client.github_retrieve = call_wrapper(github.retrieve)
+Client.github_fetch_repo = call_wrapper(github.fetch_repo)
+Client.ipfs_list = call_wrapper(ipfs.list)
+Client.ipfs_read = call_wrapper(ipfs.read)
+Client.ipfs_update = call_wrapper(ipfs.update)
+Client.ipfs_create = call_wrapper(ipfs.create)
+Client.ipfs_delete = call_wrapper(ipfs.delete)
+Client.ipfs_build = call_wrapper(ipfs.build)
+Client.ipfs_deploy = call_wrapper(ipfs.deploy)
+Client.users_me = call_wrapper(users.me)
