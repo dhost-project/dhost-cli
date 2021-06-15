@@ -7,11 +7,12 @@ from getpass import getpass
 import requests
 
 from dhost_cli import settings
+from dhost_cli.api import github, ipfs, users
 from dhost_cli.db import (fetch_all_tokens, fetch_token, init_database,
                           save_token)
 
 try:
-    from colorama import init, Fore, Back, Style
+    from colorama import Fore, init
     init()
 except (ImportError, OSError):
     HAS_COLORAMA = False
@@ -173,13 +174,21 @@ class Client:
     def raise_response_errors(cls, response=None, message=None):
         if not message:
             content = response.content
-            res_json = json.loads(content.decode())
+            try:
+                res_json = json.loads(content.decode())
+            except json.decoder.JSONDecodeError:
+                res_json = None
             status_code = response.status_code
+            detail = None
             if 'detail' in res_json:
                 detail = res_json['detail']
+            elif 'non_field_errors' in res_json:
+                detail = res_json['non_field_errors'][0]
+
+            if detail:
                 message = f'({status_code}) {detail}'
             else:
-                message = f'Error ({status_code}): {content}'
+                message = f'Error ({status_code})\n{content}'
         raise Exception(message)
 
     def post(self, uri=None, url=None, headers=None, *args, **kwargs):
@@ -216,7 +225,7 @@ class Client:
             self.raise_response_errors(response)
 
     def patch(self, uri=None, url=None, headers=None, *args, **kwargs):
-        """Send a PUT request to the API"""
+        """Send a PATCH request to the API"""
         url, headers = self._prepare_api_request(url=url,
                                                  uri=uri,
                                                  headers=headers)
@@ -255,9 +264,6 @@ class Client:
         return response
 
 
-from dhost_cli.api import github, ipfs, users
-
-
 def call_wrapper(function):
 
     def wrap(self, *args, **kwargs):
@@ -280,11 +286,33 @@ Client.github_list = call_wrapper(github.list)
 Client.github_fetch_all = call_wrapper(github.fetch_all)
 Client.github_retrieve = call_wrapper(github.retrieve)
 Client.github_fetch_repo = call_wrapper(github.fetch_repo)
-Client.ipfs_list = call_wrapper(ipfs.list)
-Client.ipfs_read = call_wrapper(ipfs.read)
-Client.ipfs_update = call_wrapper(ipfs.update)
-Client.ipfs_create = call_wrapper(ipfs.create)
-Client.ipfs_delete = call_wrapper(ipfs.delete)
-Client.ipfs_build = call_wrapper(ipfs.build)
-Client.ipfs_deploy = call_wrapper(ipfs.deploy)
+
+Client.ipfs_builds_list = call_wrapper(ipfs.builds.list)
+Client.ipfs_builds_retrieve = call_wrapper(ipfs.builds.retrieve)
+
+Client.ipfs_bundles_list = call_wrapper(ipfs.bundles.list)
+Client.ipfs_bundles_retrieve = call_wrapper(ipfs.bundles.retrieve)
+
+Client.ipfs_list = call_wrapper(ipfs.dapps.list)
+Client.ipfs_create = call_wrapper(ipfs.dapps.create)
+Client.ipfs_retrieve = call_wrapper(ipfs.dapps.retrieve)
+Client.ipfs_update = call_wrapper(ipfs.dapps.update)
+Client.ipfs_partial_update = call_wrapper(ipfs.dapps.partial_update)
+Client.ipfs_destroy = call_wrapper(ipfs.dapps.destroy)
+Client.ipfs_build = call_wrapper(ipfs.dapps.build)
+Client.ipfs_deploy = call_wrapper(ipfs.dapps.deploy)
+
+Client.ipfs_deployments_list = call_wrapper(ipfs.deployments.list)
+Client.ipfs_deployments_retrieve = call_wrapper(ipfs.deployments.retrieve)
+
+Client.ipfs_envvars_list = call_wrapper(ipfs.envvars.list)
+Client.ipfs_envvars_create = call_wrapper(ipfs.envvars.create)
+Client.ipfs_envvars_retrieve = call_wrapper(ipfs.envvars.retrieve)
+Client.ipfs_envvars_update = call_wrapper(ipfs.envvars.update)
+Client.ipfs_envvars_partial_update = call_wrapper(ipfs.envvars.partial_update)
+Client.ipfs_envvars_destroy = call_wrapper(ipfs.envvars.destroy)
+
+Client.ipfs_logs_list = call_wrapper(ipfs.logs.list)
+Client.ipfs_logs_retrieve = call_wrapper(ipfs.logs.retrieve)
+
 Client.users_me = call_wrapper(users.me)

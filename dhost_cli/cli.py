@@ -63,9 +63,9 @@ def main():
     create_ipfs_dapp.add_argument('-d', '--docker')
     create_ipfs_dapp.add_argument('-s', '--slug')
 
-    detail_ipfs_dapp = ipfs_dapp_sub.add_parser(
-        'infos', help="Get details about an IPFS dapps.")
-    detail_ipfs_dapp.add_argument('ipfs_dapp_id')
+    detail_ipfs_dapp = ipfs_dapp_sub.add_parser('ret',
+                                                help="Retrieve an IPFS dapps.")
+    detail_ipfs_dapp.add_argument('ipfs_dapp_slug')
 
     update_ipfs_dapp = ipfs_dapp_sub.add_parser('update',
                                                 help="Update an IPFS dapp.")
@@ -79,7 +79,7 @@ def main():
 
     delete_ipfs_dapp = ipfs_dapp_sub.add_parser('delete',
                                                 help="Delete an IPFS dapp.")
-    delete_ipfs_dapp.add_argument('ipfs_dapp_id')
+    delete_ipfs_dapp.add_argument('ipfs_dapp_slug')
 
     github = subparser.add_parser('github', help="Manage your github repos.")
     github_sub = github.add_subparsers(dest='github_cmd')
@@ -124,10 +124,10 @@ def dispatch(parser):
     elif args.cmd == 'ipfs':
         if args.ipfs_dapp_cmd == 'list':
             client.ipfs_list()
-        elif args.ipfs_dapp_cmd == 'infos':
-            client.ipfs_read(args.ipfs_dapp_id)
+        elif args.ipfs_dapp_cmd == 'ret':
+            client.ipfs_retrieve(args.ipfs_dapp_slug)
         elif args.ipfs_dapp_cmd == 'update':
-            client.ipfs_update(args.ipfs_dapp_id)
+            client.ipfs_update(args.ipfs_dapp_slug)
         elif args.ipfs_dapp_cmd == 'create':
             client.ipfs_create(
                 args.dapp_name,
@@ -136,7 +136,7 @@ def dispatch(parser):
                 args.slug,
             )
         elif args.ipfs_dapp_cmd == 'delete':
-            client.ipfs_delete(args.ipfs_dapp_id)
+            client.ipfs_destroy(args.ipfs_dapp_slug)
 
     elif args.cmd == 'github':
         if args.github_cmd == 'list':
