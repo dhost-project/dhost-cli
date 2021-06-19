@@ -10,7 +10,7 @@ def list(self):
 
 
 def read(self, dapp_slug):
-    """Get details about an IPFs dapp."""
+    """Get details about a dapp."""
     uri = RETRIEVE_DAPP_URL.format(dapp_slug=dapp_slug)
     response = self.get(uri=uri)
     print(f'Details for IPFS dapp: {dapp_slug}')

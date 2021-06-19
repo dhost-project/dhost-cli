@@ -28,22 +28,31 @@ CLI to access the DHost services.
 .. code-block::
 
     dhost-cli -h
-    usage: dhost [-h] [-u USERNAME] [-t TOKEN] [-T] [-a API_URL] {ipfs} ...
+    usage: dhost [-h] [-v] [-u USERNAME] [-p PASSWORD] [-t TOKEN] [-T]
+                 [--raise-exceptions] [--disable-color]
+                 {token,me,ipfs,github} ...
 
     dhost CLI tool to host decentralized websites.
 
     positional arguments:
-      {ipfs}
-        ipfs                Manage you IPFS dapps.
+      {token,me,ipfs,github}
+        token               Manage your API tokens.
+        me                  Manage your infos.
+        ipfs                Manage your IPFS dapps.
+        github              Manage your github repos.
 
     optional arguments:
       -h, --help            show this help message and exit
+      -v, --version
       -u USERNAME, --username USERNAME
+                            Connect to API with username and password.
+      -p PASSWORD, --password PASSWORD
                             Connect to API with username and password.
       -t TOKEN, --token TOKEN
                             Connect to API with token.
       -T, --get-token       Get your API token from username and password.
-      -a API_URL, --api-url API_URL
+      --raise-exceptions    Raise exceptions instead of just printing them.
+      --disable-color       Disable colored output.
 
 * Free software: MIT license
 * Documentation: https://dhost-cli.readthedocs.io.

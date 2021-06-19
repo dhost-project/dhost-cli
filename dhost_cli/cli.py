@@ -35,7 +35,7 @@ def main():
                         help="Get your API token from username and password.")
     parser.add_argument('--raise-exceptions',
                         action='store_true',
-                        help="Raise exceptions instead of just printing it.")
+                        help="Raise exceptions instead of just printing them.")
     parser.add_argument('--disable-color',
                         action='store_true',
                         help="Disable colored output.")
