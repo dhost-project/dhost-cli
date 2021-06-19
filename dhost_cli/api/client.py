@@ -7,7 +7,7 @@ from getpass import getpass
 import requests
 
 from dhost_cli import settings
-from dhost_cli.api import github, ipfs, users
+from dhost_cli.api import dapps, github, ipfs, users
 from dhost_cli.db import (fetch_all_tokens, fetch_token, init_database,
                           save_token)
 
@@ -282,6 +282,9 @@ def call_wrapper(function):
     return wrap
 
 
+Client.dapps_list = call_wrapper(dapps.list)
+Client.dapps_retrieve = call_wrapper(dapps.retrieve)
+
 Client.github_list = call_wrapper(github.list)
 Client.github_fetch_all = call_wrapper(github.fetch_all)
 Client.github_retrieve = call_wrapper(github.retrieve)
@@ -299,7 +302,6 @@ Client.ipfs_retrieve = call_wrapper(ipfs.dapps.retrieve)
 Client.ipfs_update = call_wrapper(ipfs.dapps.update)
 Client.ipfs_partial_update = call_wrapper(ipfs.dapps.partial_update)
 Client.ipfs_destroy = call_wrapper(ipfs.dapps.destroy)
-Client.ipfs_build = call_wrapper(ipfs.dapps.build)
 Client.ipfs_deploy = call_wrapper(ipfs.dapps.deploy)
 
 Client.ipfs_deployments_list = call_wrapper(ipfs.deployments.list)
