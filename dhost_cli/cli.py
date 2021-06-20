@@ -90,10 +90,13 @@ def main():
     github = subparser.add_parser('github', help="Manage your github repos.")
     github_sub = github.add_subparsers(dest='github_cmd')
     github_sub.add_parser('list')
-    read_github = github_sub.add_parser('read')
+    read_github = github_sub.add_parser('ret')
     read_github.add_argument('repo')
-    read_github = github_sub.add_parser('fetch')
-    read_github.add_argument('repo', nargs="?")
+    github_sub.add_parser('fetch-all')
+    fetch_github = github_sub.add_parser('fetch')
+    fetch_github.add_argument('repo')
+    fetch_branches_github = github_sub.add_parser('branches')
+    fetch_branches_github.add_argument('repo')
 
     dispatch(parser)
 
@@ -150,13 +153,14 @@ def dispatch(parser):
     elif args.cmd == 'github':
         if args.github_cmd == 'list':
             client.github_list()
-        elif args.github_cmd == 'read':
+        elif args.github_cmd == 'ret':
             client.github_retrieve(args.repo)
+        elif args.github_cmd == 'fetch-all':
+            client.github_fetch_all()
         elif args.github_cmd == 'fetch':
-            if args.repo:
-                client.github_fetch_repo(args.repo)
-            else:
-                client.github_fetch_all()
+            client.github_fetch_repo(args.repo)
+        elif args.github_cmd == 'branches':
+            client.github_fetch_branches(args.repo)
 
     else:
         parser.print_help()

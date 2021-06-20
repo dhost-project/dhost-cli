@@ -289,6 +289,7 @@ Client.github_list = call_wrapper(github.list)
 Client.github_fetch_all = call_wrapper(github.fetch_all)
 Client.github_retrieve = call_wrapper(github.retrieve)
 Client.github_fetch_repo = call_wrapper(github.fetch_repo)
+Client.github_fetch_branches = call_wrapper(github.fetch_branches)
 
 Client.ipfs_builds_list = call_wrapper(ipfs.builds.list)
 Client.ipfs_builds_retrieve = call_wrapper(ipfs.builds.retrieve)

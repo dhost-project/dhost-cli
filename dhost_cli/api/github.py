@@ -1,24 +1,40 @@
+from dhost_cli.api.utils import basic_print
+
+LIST_REPOSITORIES = 'v1/github/repositories/'
+FETCH_ALL_REPOSITORIES = 'v1/github/repositories/fetch_all/'
+RETRIEVE_REPOSITORIES = 'v1/github/repositories/{id}/'
+FETCH_REPOSITORIES = 'v1/github/repositories/{id}/fetch/'
+FETCH_BRANCHES_REPOSITORIES = 'v1/github/repositories/{id}/fetch_branches/'
+
+
 def list(self):
-    uri = 'v1/github/'
+    uri = LIST_REPOSITORIES
     response = self.get(uri=uri)
-    print(response.json())
+    basic_print(response.json(), many=True)
 
 
 def fetch_all(self):
     """Update all repos from the Github API"""
-    uri = 'v1/github/fetch_all'
+    uri = FETCH_ALL_REPOSITORIES
     response = self.get(uri=uri)
-    print(response.json())
+    basic_print(response.json(), many=True)
 
 
 def retrieve(self, repo_id):
-    uri = f'v1/github/{repo_id}/'
+    uri = RETRIEVE_REPOSITORIES.format(id=repo_id)
     response = self.get(uri=uri)
-    print(response.json())
+    basic_print(response.json())
 
 
 def fetch_repo(self, repo_id):
     """Update the repo from the Github API"""
-    uri = f'v1/github/{repo_id}/fetch/'
+    uri = FETCH_REPOSITORIES.format(id=repo_id)
     response = self.get(uri=uri)
-    print(response.json())
+    basic_print(response.json())
+
+
+def fetch_branches(self, repo_id):
+    """Update the repo branches from the Github API"""
+    uri = FETCH_BRANCHES_REPOSITORIES.format(id=repo_id)
+    response = self.get(uri=uri)
+    basic_print(response.json())
