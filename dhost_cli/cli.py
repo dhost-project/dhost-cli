@@ -62,7 +62,7 @@ def main():
     ipfs_dapp_sub = ipfs_dapp.add_subparsers(dest='ipfs_dapps_cmd')
     ipfs_dapp_sub.add_parser('list', help="List IPFS dapps.")
 
-    create_ipfs_dapp = ipfs_dapp_sub.add_parser('create',
+    create_ipfs_dapp = ipfs_dapp_sub.add_parser('new',
                                                 help="Create a new IPFS dapp.")
     create_ipfs_dapp.add_argument('-s', '--slug')
 
@@ -143,7 +143,7 @@ def dispatch(parser):
             client.ipfs_retrieve(args.ipfs_dapp_slug)
         elif args.ipfs_dapps_cmd == 'update':
             client.ipfs_update(args.ipfs_dapp_slug)
-        elif args.ipfs_dapps_cmd == 'create':
+        elif args.ipfs_dapps_cmd == 'new':
             client.ipfs_create(args.slug)
         elif args.ipfs_dapps_cmd == 'delete':
             client.ipfs_destroy(args.ipfs_dapp_slug)
