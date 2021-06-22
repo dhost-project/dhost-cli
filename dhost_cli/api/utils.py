@@ -7,7 +7,7 @@ def get_user_str_input(str_input='', message=''):
 
 def basic_item_print(data):
     for key, value in data.items():
-        print(f'{key}: {value}')
+        print('{key}: {value}'.format(key=key, value=value))
 
 
 def basic_list_print(data_list):

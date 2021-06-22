@@ -41,4 +41,4 @@ def partial_update(self, dapp_slug, id, **data):
 def destroy(self, dapp_slug, id):
     uri = DESTROY_ENVVAR_URL.format(dapp_slug=dapp_slug, id=id)
     response = self.delete(uri=uri)
-    print(f'Successfuly deleted env var with id: {id}.')
+    print('Successfuly deleted env var with id: {id}.'.format(id=id))

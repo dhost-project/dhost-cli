@@ -50,7 +50,7 @@ def destroy(self, dapp_slug):
     """Delete an IPFS dapp"""
     uri = DELETE_DAPP_URL.format(dapp_slug=dapp_slug)
     self.delete(uri=uri)
-    print(f'Successfuly deleted IPFS dapp: {dapp_slug}.')
+    print('Successfuly deleted IPFS dapp: {dapp_slug}.'.format(dapp_slug=dapp_slug))
 
 
 def deploy(self, dapp_slug):
@@ -58,4 +58,4 @@ def deploy(self, dapp_slug):
     uri = DEPLOY_DAPP_URL.format(dapp_slug=dapp_slug)
     response = self.get(uri=uri)
     status = response.json()['status']
-    print(f'IPFS dapp {dapp_slug}: {status}.')
+    print('IPFS dapp {dapp_slug}: {status}.'.format(dapp_slug=dapp_slug, status=status))
