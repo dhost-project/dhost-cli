@@ -55,4 +55,4 @@ CLI to access the DHost services.
       --disable-color       Disable colored output.
 
 * Free software: MIT license
-* Documentation: https://dhost-cli.readthedocs.io.
+* Documentation: https://dhost-cli.readthedocs.io/en/latest/.
