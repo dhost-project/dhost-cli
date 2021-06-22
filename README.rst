@@ -46,4 +46,4 @@ CLI to access the DHost services.
       -a API_URL, --api-url API_URL
 
 * Free software: MIT license
-* Documentation: https://dhost-cli.readthedocs.io.
+* Documentation: https://dhost-cli.readthedocs.io/en/latest/.
