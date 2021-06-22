@@ -98,12 +98,12 @@ def main():
     fetch_branches_github = github_sub.add_parser('branches')
     fetch_branches_github.add_argument('repo')
 
-    dispatch(parser)
+    dispatch(parser, token, dapps, ipfs_dapp, github)
 
     return 0
 
 
-def dispatch(parser):
+def dispatch(parser, token, dapps, ipfs_dapp, github):
     args = parser.parse_args()
 
     client = Client(
@@ -126,6 +126,8 @@ def dispatch(parser):
             client.revoke_token(args.token_id)
         elif args.token_cmd == 'refresh_token':
             client.refresh_token(args.token_id)
+        else:
+            token.print_help()
 
     elif args.cmd == 'me':
         client.users_me()
@@ -135,6 +137,8 @@ def dispatch(parser):
             client.dapps_list()
         elif args.dapps_cmd == 'ret':
             client.dapps_retrieve(dapp_slug=args.dapp_slug)
+        else:
+            dapps.print_help()
 
     elif args.cmd == 'ipfs':
         if args.ipfs_dapps_cmd == 'list':
@@ -149,6 +153,8 @@ def dispatch(parser):
             client.ipfs_destroy(args.ipfs_dapp_slug)
         elif args.ipfs_dapps_cmd == 'deploy':
             client.ipfs_deploy(args.ipfs_dapp_slug)
+        else:
+            ipfs_dapp.print_help()
 
     elif args.cmd == 'github':
         if args.github_cmd == 'list':
@@ -161,6 +167,8 @@ def dispatch(parser):
             client.github_fetch_repo(args.repo)
         elif args.github_cmd == 'branches':
             client.github_fetch_branches(args.repo)
+        else:
+            github.print_help()
 
     else:
         parser.print_help()
