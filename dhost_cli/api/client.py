@@ -186,9 +186,9 @@ class Client:
                 detail = res_json['non_field_errors'][0]
 
             if detail:
-                message = f'({status_code}) {detail}'
+                message = '({status_code}) {detail}'.format(status_code=status_code, detail=detail)
             else:
-                message = f'Error ({status_code})\n{content}'
+                message = 'Error ({status_code})\n{content}'.format(status_code=status_code, content=content)
         raise Exception(message)
 
     def post(self, uri=None, url=None, headers=None, *args, **kwargs):
