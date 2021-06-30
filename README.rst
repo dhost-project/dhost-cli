@@ -56,3 +56,12 @@ CLI to access the DHost services.
 
 * Free software: MIT license
 * Documentation: https://dhost-cli.readthedocs.io/en/latest/.
+
+Dev.
+
+.. code-block::
+
+   python3.8 -m venv venv
+   source ./venv/bin/activate
+   pip install -r requirements_dev.txt
+   python -m dhost_cli
