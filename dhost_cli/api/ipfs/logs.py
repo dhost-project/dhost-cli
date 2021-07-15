@@ -1,7 +1,7 @@
 from dhost_cli.api.utils import basic_print
 
-LIST_LOGS_URL = 'v1/ipfs/{dapp_slug}/logs/'
-RETRIEVE_LOG_URL = 'v1/ipfs/{dapp_slug}/logs/{id}/'
+LIST_LOGS_URL = "ipfs/{dapp_slug}/logs/"
+RETRIEVE_LOG_URL = "ipfs/{dapp_slug}/logs/{id}/"
 
 
 def list(self, dapp_slug):

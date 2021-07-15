@@ -1,5 +1,5 @@
-LIST_DEPLOYMENTS_URL = 'v1/ipfs/{dapp_slug}/deployments/'
-RETRIEVE_DEPLOYMENT_URL = 'v1/ipfs/{dapp_slug}/deployments/{id}/'
+LIST_DEPLOYMENTS_URL = "ipfs/{dapp_slug}/deployments/"
+RETRIEVE_DEPLOYMENT_URL = "ipfs/{dapp_slug}/deployments/{id}/"
 
 
 def list(self, dapp_slug):

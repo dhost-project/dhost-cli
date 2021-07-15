@@ -1,11 +1,11 @@
 from dhost_cli.api.utils import basic_print
 
-LIST_ENVVARS_URL = 'v1/ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/'
-CREATE_ENVVAR_URL = 'v1/ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/'
-RETRIEVE_ENVVAR_URL = 'v1/ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/{id}/'
-UPDATE_ENVVAR_URL = 'v1/ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/{id}/'
-PARTIAL_UPDATE_ENVVAR_URL = 'v1/ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/{id}/'
-DESTROY_ENVVAR_URL = 'v1/ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/{id}/'
+LIST_ENVVARS_URL = "ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/"
+CREATE_ENVVAR_URL = "ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/"
+RETRIEVE_ENVVAR_URL = "ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/{id}/"
+UPDATE_ENVVAR_URL = "ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/{id}/"
+PARTIAL_UPDATE_ENVVAR_URL = "ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/{id}/"
+DESTROY_ENVVAR_URL = "ipfs/{dapp_slug}/buildoptions/{dapp_slug}/envvars/{id}/"
 
 
 def list(self, dapp_slug):
@@ -41,4 +41,4 @@ def partial_update(self, dapp_slug, id, **data):
 def destroy(self, dapp_slug, id):
     uri = DESTROY_ENVVAR_URL.format(dapp_slug=dapp_slug, id=id)
     response = self.delete(uri=uri)
-    print('Successfuly deleted env var with id: {id}.'.format(id=id))
+    print("Successfuly deleted env var with id: {id}.".format(id=id))

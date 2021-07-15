@@ -1,5 +1,5 @@
-LIST_BUNDLES_URL = 'v1/ipfs/{dapp_slug}/bundles/'
-RETRIEVE_BUNDLE_URL = 'v1/ipfs/{dapp_slug}/bundles/{id}'
+LIST_BUNDLES_URL = "ipfs/{dapp_slug}/bundles/"
+RETRIEVE_BUNDLE_URL = "ipfs/{dapp_slug}/bundles/{id}"
 
 
 def list(self, dapp_slug):

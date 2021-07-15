@@ -1,10 +1,10 @@
 from dhost_cli.api.utils import basic_print
 
-LIST_REPOSITORIES = 'v1/github/repositories/'
-FETCH_ALL_REPOSITORIES = 'v1/github/repositories/fetch_all/'
-RETRIEVE_REPOSITORIES = 'v1/github/repositories/{id}/'
-FETCH_REPOSITORIES = 'v1/github/repositories/{id}/fetch/'
-FETCH_BRANCHES_REPOSITORIES = 'v1/github/repositories/{id}/fetch_branches/'
+LIST_REPOSITORIES = "github/repositories/"
+FETCH_ALL_REPOSITORIES = "github/repositories/fetch_all/"
+RETRIEVE_REPOSITORIES = "github/repositories/{id}/"
+FETCH_REPOSITORIES = "github/repositories/{id}/fetch/"
+FETCH_BRANCHES_REPOSITORIES = "github/repositories/{id}/fetch_branches/"
 
 
 def list(self):

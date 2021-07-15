@@ -1,5 +1,5 @@
-LIST_BUILDS_URL = 'v1/ipfs/{dapp_slug}/buildoptions/{dapp_slug}/builds/'
-RETRIEVE_BUILD_URL = 'v1/ipfs/{dapp_slug}/buildoptions/{dapp_slug}/builds/{id}/'
+LIST_BUILDS_URL = "ipfs/{dapp_slug}/buildoptions/{dapp_slug}/builds/"
+RETRIEVE_BUILD_URL = "ipfs/{dapp_slug}/buildoptions/{dapp_slug}/builds/{id}/"
 
 
 def list(self, dapp_slug):

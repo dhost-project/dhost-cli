@@ -1,7 +1,7 @@
 from dhost_cli.api.utils import basic_print
 
-LIST_DAPPS_URL = 'v1/dapps/'
-RETRIEVE_DAPP_URL = 'v1/dapps/{dapp_slug}/'
+LIST_DAPPS_URL = "dapps/"
+RETRIEVE_DAPP_URL = "dapps/{dapp_slug}/"
 
 
 def list(self):
