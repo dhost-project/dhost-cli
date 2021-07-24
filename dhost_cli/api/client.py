@@ -8,11 +8,16 @@ import requests
 
 from dhost_cli import settings
 from dhost_cli.api import dapps, github, ipfs, users
-from dhost_cli.db import (fetch_all_tokens, fetch_token, init_database,
-                          save_token)
+from dhost_cli.db import (
+    fetch_all_tokens,
+    fetch_token,
+    init_database,
+    save_token,
+)
 
 try:
     from colorama import Fore, init
+
     init()
 except (ImportError, OSError):
     HAS_COLORAMA = False
@@ -43,17 +48,19 @@ class Client:
         self.color = color and HAS_COLORAMA
 
     def get_token_or_authentify(self):
-        """Get the token from the database if it exist, or authentify user"""
+        """Get the token from the database if it exist, or authentify user."""
         init_database()
         now = datetime.datetime.now() - datetime.timedelta(seconds=120)
         access_token, refresh_token, expires = fetch_token()
 
         if expires:
-            expires_at = datetime.datetime.strptime(expires,
-                                                    "%Y-%m-%d %H:%M:%S.%f")
+            expires_at = datetime.datetime.strptime(
+                expires, "%Y-%m-%d %H:%M:%S.%f"
+            )
             if expires_at < now:
                 access_token, refresh_token, expires = self._send_refresh_token(
-                    refresh_token)
+                    refresh_token
+                )
                 save_token(access_token, refresh_token, expires)
 
         if access_token is None:
@@ -63,97 +70,101 @@ class Client:
         return access_token
 
     def authentify(self):
-        """
+        """Authentify the user.
+
         With the `Resource owner password-based` on a public client type
         this function will authenticate the user from his credentials and get
-        a token to access the API
+        a token to access the API.
         """
         if self.username:
             username = self.username
         else:
-            username = input('username: ')
+            username = input("username: ")
 
         # Give the user 3 attempt to give the correct password
         for retry in range(0, 3):
             if self.password:
                 password = self.password
             else:
-                password = getpass('password: ')
+                password = getpass("password: ")
             try:
                 access_token, refresh_token, expires_in = self._get_token_oauth(
-                    username=username, password=password)
+                    username=username, password=password
+                )
                 if access_token:
                     return access_token, refresh_token, expires_in
             except Exception as e:
                 print(e)
 
-        raise Exception('Failed to authentify.')
+        raise Exception("Failed to authentify.")
 
     @classmethod
     def _get_token_oauth(cls, username, password):
         url = cls.OAUTH_SERVER_URL + cls.OAUTH_TOKEN_URL
         cred = {
-            'username': username,
-            'password': password,
-            'client_id': cls.OAUTH_CLIENT_ID,
-            'grant_type': 'password'
+            "username": username,
+            "password": password,
+            "client_id": cls.OAUTH_CLIENT_ID,
+            "grant_type": "password",
         }
         r = requests.post(url, data=cred)
         if r.status_code == 200:
-            access_token = r.json()['access_token']
-            refresh_token = r.json()['refresh_token']
-            expires_in = r.json()['expires_in']
+            access_token = r.json()["access_token"]
+            refresh_token = r.json()["refresh_token"]
+            expires_in = r.json()["expires_in"]
             return access_token, refresh_token, expires_in
         else:
-            if 'error_description' in r.json():
-                error = r.json()['error_description']
+            if "error_description" in r.json():
+                error = r.json()["error_description"]
             else:
-                error = ('Failed to authentify with credentials given. Code: {}'
-                         '\nMessage: {}.'.format(r.status_code, r.json()))
+                error = (
+                    "Failed to authentify with credentials given. Code: {}"
+                    "\nMessage: {}.".format(r.status_code, r.json())
+                )
             cls.raise_response_errors(message=error)
 
     @classmethod
     def _send_refresh_token(cls, refresh_token):
-        """Send a request to the OAuth server to refresh the passed token"""
+        """Send a request to the OAuth server to refresh the passed token."""
         url = cls.OAUTH_SERVER_URL + cls.OAUTH_TOKEN_URL
         cred = {
-            'refresh_token': refresh_token,
-            'client_id': cls.OAUTH_CLIENT_ID,
-            'grant_type': 'refresh_token',
+            "refresh_token": refresh_token,
+            "client_id": cls.OAUTH_CLIENT_ID,
+            "grant_type": "refresh_token",
         }
         r = requests.post(url, data=cred)
         if r.status_code == 200:
-            access_token = r.json()['access_token']
-            refresh_token = r.json()['refresh_token']
-            expires_in = r.json()['expires_in']
+            access_token = r.json()["access_token"]
+            refresh_token = r.json()["refresh_token"]
+            expires_in = r.json()["expires_in"]
             return access_token, refresh_token, expires_in
         else:
-            error = ('Failed to refresh token. Code: {}\nMessage: {}.'.format(
-                r.status_code, r.json()))
+            error = "Failed to refresh token. Code: {}\nMessage: {}.".format(
+                r.status_code, r.json()
+            )
             cls.raise_response_errors(message=error)
 
     def refresh_token(self, token_id):
-        print('Refreshing token {}.'.format(token_id))
+        print("Refreshing token {}.".format(token_id))
 
     def get_token(self):
         return self.token
 
     def _get_authorization_header(self, token=None):
-        """Use the passed token if available"""
+        """Use the passed token if available."""
         token = self.token if token is None else token
-        return {'Authorization': self.TOKEN_PREFIX + ' ' + token}
+        return {"Authorization": self.TOKEN_PREFIX + " " + token}
 
-    def _prepare_api_request(self,
-                             uri=None,
-                             url=None,
-                             headers=None,
-                             token=None):
-        """Prepare and API request with authorization header and build URL"""
+    def _prepare_api_request(
+        self, uri=None, url=None, headers=None, token=None
+    ):
+        """Prepare and API request with authorization header and build URL."""
         if url is None:
             if uri is None:
                 raise Exception(
-                    'You must provide either an URL or an URI to make an API '
-                    'request.')
+                    "You must provide either an URL or an URI to make an API "
+                    "request."
+                )
             else:
                 url = self.API_URL + uri
         # TODO add passed headers params
@@ -180,22 +191,26 @@ class Client:
                 res_json = None
             status_code = response.status_code
             detail = None
-            if 'detail' in res_json:
-                detail = res_json['detail']
-            elif 'non_field_errors' in res_json:
-                detail = res_json['non_field_errors'][0]
+            if "detail" in res_json:
+                detail = res_json["detail"]
+            elif "non_field_errors" in res_json:
+                detail = res_json["non_field_errors"][0]
 
             if detail:
-                message = '({status_code}) {detail}'.format(status_code=status_code, detail=detail)
+                message = "({status_code}) {detail}".format(
+                    status_code=status_code, detail=detail
+                )
             else:
-                message = 'Error ({status_code})\n{content}'.format(status_code=status_code, content=content)
+                message = "Error ({status_code})\n{content}".format(
+                    status_code=status_code, content=content
+                )
         raise Exception(message)
 
     def post(self, uri=None, url=None, headers=None, *args, **kwargs):
-        """Send a POST request to the API"""
-        url, headers = self._prepare_api_request(url=url,
-                                                 uri=uri,
-                                                 headers=headers)
+        """Send a POST request to the API."""
+        url, headers = self._prepare_api_request(
+            url=url, uri=uri, headers=headers
+        )
         response = requests.post(url, headers=headers, *args, **kwargs)
         if response.status_code == 201:
             return response
@@ -203,10 +218,10 @@ class Client:
             self.raise_response_errors(response)
 
     def get(self, uri=None, url=None, headers=None, *args, **kwargs):
-        """Send a GET request to the API"""
-        url, headers = self._prepare_api_request(url=url,
-                                                 uri=uri,
-                                                 headers=headers)
+        """Send a GET request to the API."""
+        url, headers = self._prepare_api_request(
+            url=url, uri=uri, headers=headers
+        )
         response = requests.get(url, headers=headers, *args, **kwargs)
         if response.status_code == 200:
             return response
@@ -214,10 +229,10 @@ class Client:
             self.raise_response_errors(response)
 
     def put(self, uri=None, url=None, headers=None, *args, **kwargs):
-        """Send a PUT request to the API"""
-        url, headers = self._prepare_api_request(url=url,
-                                                 uri=uri,
-                                                 headers=headers)
+        """Send a PUT request to the API."""
+        url, headers = self._prepare_api_request(
+            url=url, uri=uri, headers=headers
+        )
         response = requests.put(url, headers=headers, *args, **kwargs)
         if response.status_code == 200:
             return response
@@ -225,10 +240,10 @@ class Client:
             self.raise_response_errors(response)
 
     def patch(self, uri=None, url=None, headers=None, *args, **kwargs):
-        """Send a PATCH request to the API"""
-        url, headers = self._prepare_api_request(url=url,
-                                                 uri=uri,
-                                                 headers=headers)
+        """Send a PATCH request to the API."""
+        url, headers = self._prepare_api_request(
+            url=url, uri=uri, headers=headers
+        )
         response = requests.patch(url, headers=headers, *args, **kwargs)
         if response.status_code == 200:
             return response
@@ -236,10 +251,10 @@ class Client:
             self.raise_response_errors(response)
 
     def delete(self, uri=None, url=None, headers=None, *args, **kwargs):
-        """Send a DELETE request to the API"""
-        url, headers = self._prepare_api_request(url=url,
-                                                 uri=uri,
-                                                 headers=headers)
+        """Send a DELETE request to the API."""
+        url, headers = self._prepare_api_request(
+            url=url, uri=uri, headers=headers
+        )
         response = requests.delete(url, headers=headers, *args, **kwargs)
         if response.status_code == 204:
             return response
@@ -247,10 +262,10 @@ class Client:
             self.raise_response_errors(response)
 
     def head(self, uri=None, url=None, headers=None, *args, **kwargs):
-        """Send a HEAD request to the API"""
-        url, headers = self._prepare_api_request(url=url,
-                                                 uri=uri,
-                                                 headers=headers)
+        """Send a HEAD request to the API."""
+        url, headers = self._prepare_api_request(
+            url=url, uri=uri, headers=headers
+        )
         response = requests.head(url, *args, **kwargs)
         if response.status_code == 200:
             return response
@@ -259,13 +274,12 @@ class Client:
 
     def post_file(self, file_paht, *args, **kwargs):
         # TODO get file here
-        file = ''
+        file = ""
         response = self.post(file=file, *args, **kwargs)
         return response
 
 
 def call_wrapper(function):
-
     def wrap(self, *args, **kwargs):
         if self.raise_exceptions:
             return function(self, *args, **kwargs)

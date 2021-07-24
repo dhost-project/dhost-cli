@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Tests for `dhost_cli` package."""
 
-import pytest
+# import pytest
 
-from dhost_cli import dhost_cli
+# from dhost_cli import dhost_cli

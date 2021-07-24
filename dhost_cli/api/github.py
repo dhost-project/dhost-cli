@@ -14,7 +14,7 @@ def list(self):
 
 
 def fetch_all(self):
-    """Update all repos from the Github API"""
+    """Update all repos from the Github API."""
     uri = FETCH_ALL_REPOSITORIES
     response = self.get(uri=uri)
     basic_print(response.json(), many=True)
@@ -27,14 +27,14 @@ def retrieve(self, repo_id):
 
 
 def fetch_repo(self, repo_id):
-    """Update the repo from the Github API"""
+    """Update the repo from the Github API."""
     uri = FETCH_REPOSITORIES.format(id=repo_id)
     response = self.get(uri=uri)
     basic_print(response.json())
 
 
 def fetch_branches(self, repo_id):
-    """Update the repo branches from the Github API"""
+    """Update the repo branches from the Github API."""
     uri = FETCH_BRANCHES_REPOSITORIES.format(id=repo_id)
     response = self.get(uri=uri)
     basic_print(response.json())

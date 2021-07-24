@@ -1,12 +1,15 @@
-pip
+black
 bump2version
 wheel
 watchdog
 flake8
+flake8-docstrings
 tox
 coverage
 Sphinx
 twine
+isort
+pip-upgrader
 pytest
 pytest-runner
 requests

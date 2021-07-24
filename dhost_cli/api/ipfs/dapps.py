@@ -23,7 +23,7 @@ def retrieve(self, dapp_slug):
 
 
 def update(self, dapp_slug, **data):
-    """Update an IPFS dapp"""
+    """Update an IPFS dapp."""
     uri = UPDATE_DAPP_URL.format(dapp_slug=dapp_slug)
     response = self.put(uri=uri, data=data)
     basic_print(response.json())
@@ -36,7 +36,7 @@ def partial_update(self, dapp_slug, **data):
 
 
 def create(self, slug=None):
-    """Create an IPFS dapp"""
+    """Create an IPFS dapp."""
     uri = CREATE_DAPP_URL
     slug = get_user_str_input(slug, "slug")
     data = {
@@ -47,15 +47,23 @@ def create(self, slug=None):
 
 
 def destroy(self, dapp_slug):
-    """Delete an IPFS dapp"""
+    """Delete an IPFS dapp."""
     uri = DELETE_DAPP_URL.format(dapp_slug=dapp_slug)
     self.delete(uri=uri)
-    print("Successfuly deleted IPFS dapp: {dapp_slug}.".format(dapp_slug=dapp_slug))
+    print(
+        "Successfuly deleted IPFS dapp: {dapp_slug}.".format(
+            dapp_slug=dapp_slug
+        )
+    )
 
 
 def deploy(self, dapp_slug):
-    """Deploy and IPFS dapp"""
+    """Deploy and IPFS dapp."""
     uri = DEPLOY_DAPP_URL.format(dapp_slug=dapp_slug)
     response = self.get(uri=uri)
     status = response.json()["status"]
-    print("IPFS dapp {dapp_slug}: {status}.".format(dapp_slug=dapp_slug, status=status))
+    print(
+        "IPFS dapp {dapp_slug}: {status}.".format(
+            dapp_slug=dapp_slug, status=status
+        )
+    )
